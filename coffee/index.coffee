@@ -42,11 +42,13 @@ class ImageModule
 			tag = templaterState.textInsideTag.substr(1)
 			imgData=scopeManager.getValueFromScope(tag)
 
-			if imgData=='undefined' then return @replaceBy('<w:t></w:t>','w:t')
+			tagXml=@manager.getInstance('xmlTemplater').tagXml
+			startEnd= "<#{tagXml}></#{tagXml}>"
+			if imgData=='undefined' then return @replaceBy(startEnd,tagXml)
 			try
 				imgBuffer=@getImageFromData(imgData)
 			catch e
-				return @replaceBy('<w:t></w:t>','w:t')
+				return @replaceBy(startEnd,tagXml)
 			rId=@imgManager
 				.loadImageRels()
 				.addImageRels(@getNextImageName(),imgBuffer)
@@ -55,10 +57,10 @@ class ImageModule
 			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
 			if @options.centered==false
-				outsideElement='w:t'
+				outsideElement=tagXml
 				newText=@getImageXml(rId,size)
 			if @options.centered==true
-				outsideElement='w:p'
+				outsideElement=tagXml.substr(0,1)+':p'
 				newText=@getImageXmlCentered(rId,size)
 
 			@replaceBy(newText,outsideElement)
