@@ -73,7 +73,7 @@ module.exports = class ImgManager
 		relationships.appendChild newTag
 		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
-	getImageName:(id)->
+	getImageName:(id=0)->
 		nameCandidate="Copie_"+id+".png"
 		fullPath=@getFullPath(nameCandidate)
 		if @hasImage(fullPath)

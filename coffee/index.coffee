@@ -1,16 +1,19 @@
 SubContent=require('docxtemplater').SubContent
 ImgManager=require('./imgManager')
+ImgReplacer=require('./imgReplacer')
 fs=require('fs')
 
 class ImageModule
 	constructor:(@options={})->
 		if !@options.centered? then @options.centered=false
+		@qrQueue=[]
 		@imageNumber=1
 	handleEvent:(event,eventData)->
 		if event=='rendering-file'
 			@renderingFileName=eventData
 			gen=@manager.getInstance('gen')
 			@imgManager=new ImgManager(gen.zip,@renderingFileName)
+			@imgManager.loadImageRels()
 	get:(data)->
 		if data=='loopType'
 			templaterState=@manager.getInstance('templaterState')
@@ -34,36 +37,57 @@ class ImageModule
 		[150,150]
 	getImageFromData:(imgData)->
 		fs.readFileSync(imgData)
+	replaceTag:->
+		scopeManager=@manager.getInstance('scopeManager')
+		templaterState=@manager.getInstance('templaterState')
+
+		tag = templaterState.textInsideTag.substr(1)
+		imgData=scopeManager.getValueFromScope(tag)
+
+		tagXml=@manager.getInstance('xmlTemplater').tagXml
+		startEnd= "<#{tagXml}></#{tagXml}>"
+		if imgData=='undefined' then return @replaceBy(startEnd,tagXml)
+		try
+			imgBuffer=@getImageFromData(imgData)
+		catch e
+			return @replaceBy(startEnd,tagXml)
+		rId=@imgManager
+			.loadImageRels()
+			.addImageRels(@getNextImageName(),imgBuffer)
+
+		sizePixel=@getSizeFromData(imgBuffer)
+		size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
+
+		if @options.centered==false
+			outsideElement=tagXml
+			newText=@getImageXml(rId,size)
+		if @options.centered==true
+			outsideElement=tagXml.substr(0,1)+':p'
+			newText=@getImageXmlCentered(rId,size)
+
+		@replaceBy(newText,outsideElement)
+
+	replaceQr:->
+		xmlTemplater=@manager.getInstance('xmlTemplater')
+		imR=new ImgReplacer(xmlTemplater,@imgManager)
+		imR.getDataFromString=(result,cb)=>
+			cb(null,@getImageFromData(result))
+		imR.pushQrQueue=(num)=>
+			@qrQueue.push(num)
+		imR.popQrQueue=(num)=>
+			found = @qrQueue.indexOf(num)
+			if found!=-1
+				@qrQueue.splice(found)
+			else throw new Error("qrqueue #{num} is not in qrqueue")
+			if @qrQueue.length==0 then @finished()
+		imR
+			.findImages()
+			.replaceImages()
 	handle:(type,data)->
 		if type=='replaceTag' and data=='image'
-			scopeManager=@manager.getInstance('scopeManager')
-			templaterState=@manager.getInstance('templaterState')
-
-			tag = templaterState.textInsideTag.substr(1)
-			imgData=scopeManager.getValueFromScope(tag)
-
-			tagXml=@manager.getInstance('xmlTemplater').tagXml
-			startEnd= "<#{tagXml}></#{tagXml}>"
-			if imgData=='undefined' then return @replaceBy(startEnd,tagXml)
-			try
-				imgBuffer=@getImageFromData(imgData)
-			catch e
-				return @replaceBy(startEnd,tagXml)
-			rId=@imgManager
-				.loadImageRels()
-				.addImageRels(@getNextImageName(),imgBuffer)
-
-			sizePixel=@getSizeFromData(imgBuffer)
-			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
-
-			if @options.centered==false
-				outsideElement=tagXml
-				newText=@getImageXml(rId,size)
-			if @options.centered==true
-				outsideElement=tagXml.substr(0,1)+':p'
-				newText=@getImageXmlCentered(rId,size)
-
-			@replaceBy(newText,outsideElement)
+			@replaceTag()
+		if type=='xmlRendered' and @options.qrCode
+			@replaceQr()
 		null
 	getImageXml:(rId,size)->
 		return """

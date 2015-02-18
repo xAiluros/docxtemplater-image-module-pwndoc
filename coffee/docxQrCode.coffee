@@ -7,7 +7,7 @@ JSZip=require('jszip')
 QrCode=require('qrcode-reader')
 
 module.exports= class DocxQrCode
-	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
+	constructor:(imageData, @xmlTemplater,@imgName="",@num,@getDataFromString)->
 		@callbacked=false
 		@data=imageData
 		if @data==undefined then throw new Error("data of qrcode can't be undefined")
@@ -20,9 +20,9 @@ module.exports= class DocxQrCode
 		@qr= new QrCode()
 		@qr.callback= () ->
 			_this.ready= true
-			_this.result= this.result
-			testdoc= new _this.xmlTemplater.currentClass this.result, _this.xmlTemplater.toJson()
-			testdoc.applyTags()
+			_this.result= @result
+			testdoc= new _this.xmlTemplater.currentClass @result,{Tags:_this.xmlTemplater.Tags}
+			testdoc.render()
 			_this.result=testdoc.content
 			_this.searchImage()
 		if DocUtils.env=='browser'
@@ -34,4 +34,4 @@ module.exports= class DocxQrCode
 			if err then console.error err
 			@callback(this,@imgName,@num)
 		if !@result? then return cb()
-		@xmlTemplater.DocxGen.qrCode(@result,cb)
+		@getDataFromString(@result,cb)
