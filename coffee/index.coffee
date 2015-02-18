@@ -66,12 +66,14 @@ class ImageModule
 			newText=@getImageXmlCentered(rId,size)
 
 		@replaceBy(newText,outsideElement)
-
 	replaceQr:->
 		xmlTemplater=@manager.getInstance('xmlTemplater')
 		imR=new ImgReplacer(xmlTemplater,@imgManager)
 		imR.getDataFromString=(result,cb)=>
-			cb(null,@getImageFromData(result))
+			if @getImageFromDataAsync?
+				@getImageFromDataAsync(result,cb)
+			else
+				cb(null,@getImageFromData(result))
 		imR.pushQrQueue=(num)=>
 			@qrQueue.push(num)
 		imR.popQrQueue=(num)=>
