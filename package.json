@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater-image-module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Image Module for docxtemplater v1.0",
   "main": "js/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "Edgar Hipp",
   "license": "MIT",
   "dependencies": {
-    "docxtemplater": "^1.0.6",
+    "docxtemplater": "^1.0.5",
     "gulp-browserify": "^0.5.0",
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
