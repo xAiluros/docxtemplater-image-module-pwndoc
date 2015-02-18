@@ -125,7 +125,6 @@ describe 'image adding with {% image} syntax', ()->
 
 describe 'qrcode replacing',->
 	before (done)->
-		console.log 'before'
 		name='qrExample.docx'
 
 		imageModule=new ImageModule({qrCode:true})
@@ -135,7 +134,6 @@ describe 'qrcode replacing',->
 			d
 
 		imageModule.finished=()->
-			console.log 'finished'
 			zip=doc.getZip()
 			buffer=zip.generate({type:"nodebuffer"})
 			fs.writeFile("test_qr.docx",buffer);
