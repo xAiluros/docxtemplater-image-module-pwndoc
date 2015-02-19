@@ -124,37 +124,38 @@ describe 'image adding with {% image} syntax', ()->
 
 
 describe 'qrcode replacing',->
-	before (done)->
-		name='qrExample.docx'
+	describe 'shoud work without loops',->
+		zip=null
+		before (done)->
+			name='qrExample.docx'
 
-		imageModule=new ImageModule({qrCode:true})
+			imageModule=new ImageModule({qrCode:true})
 
-		imageModule.getImageFromData=(imgData)->
-			d=fs.readFileSync('examples/'+imgData,'binary')
-			d
+			imageModule.getImageFromData=(imgData)->
+				d=fs.readFileSync('examples/'+imgData,'binary')
+				d
 
-		imageModule.finished=()->
-			zip=doc.getZip()
-			buffer=zip.generate({type:"nodebuffer"})
-			fs.writeFile("test_qr.docx",buffer);
-			done()
-
-
-		doc=docX[name]
-			.load(docX[name].loadedContent)
-			.setData({image:'image'})
-
-		doc.attachModule(imageModule)
-
-		doc
-			.render()
-
-	it 'shoud work with simple',->
-
-		it 'should be 1',->
-			expect(1).to.equal(1)
+			imageModule.finished=()->
+				zip=doc.getZip()
+				buffer=zip.generate({type:"nodebuffer"})
+				fs.writeFile("test_qr.docx",buffer);
+				done()
 
 
+			doc=docX[name]
+				.load(docX[name].loadedContent)
+				.setData({image:'image'})
+
+			doc.attachModule(imageModule)
+
+			doc
+				.render()
+
+		it 'should work with simple',->
+			images=zip.file(/media\/.*.png/)
+			expect(images.length).to.equal(2)
+			expect(images[0].asText().length).to.equal(826)
+			expect(images[1].asText().length).to.equal(17417)
 
 
 		# imageFile=zip.files['word/media/image_generated_1.png']
