@@ -79,12 +79,18 @@ class ImageModule
 		imR.popQrQueue=(num)=>
 			found = @qrQueue.indexOf(num)
 			if found!=-1
-				@qrQueue.splice(found)
-			else throw new Error("qrqueue #{num} is not in qrqueue")
+				@qrQueue.splice(found,1)
+			else @on('error',new Error("qrqueue #{num} is not in qrqueue"))
 			if @qrQueue.length==0 then @finished()
-		imR
-			.findImages()
-			.replaceImages()
+		try
+			imR
+				.findImages()
+				.replaceImages()
+		catch e
+			@on('error',e)
+	on:(event,data)->
+		if event=='error'
+			throw data
 	handle:(type,data)->
 		if type=='replaceTag' and data=='image'
 			@replaceTag()
