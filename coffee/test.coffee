@@ -7,6 +7,7 @@ fileNames=[
 	'imageLoopExample.docx',
 	'imageInlineExample.docx',
 	'qrExample.docx',
+	'noImage.docx',
 	'qrExample2.docx',
 ]
 
@@ -194,6 +195,28 @@ describe 'qrcode replacing',->
 			expect(images[2].asText().length).to.equal(17417)
 			expect(images[3].asText().length).to.equal(7177)
 
+	describe 'should work without images (it should call finished())',()->
+		d=null
+		before (done)->
+			d=new DocxGen()
+			name='noImage.docx'
+			imageModule=new ImageModule({qrCode:true})
+
+			imageModule.finished=()->
+				zip=d.getZip()
+				buffer=zip.generate({type:"nodebuffer"})
+				fs.writeFile("testNoImage.docx",buffer);
+				done()
+
+			d.attachModule(imageModule)
+			out=d
+				.load(docX[name].loadedContent)
+				.setData()
+				.render()
+
+		it 'should have the same text',->
+			text = d.getFullText()
+			expect(text).to.equal("Here is no image")
 
 	# it 'should work with inline images',()->
 	# 	name='imageInlineExample.docx'
