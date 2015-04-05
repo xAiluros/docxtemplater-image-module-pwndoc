@@ -14,6 +14,8 @@ class ImageModule
 			gen=@manager.getInstance('gen')
 			@imgManager=new ImgManager(gen.zip,@renderingFileName)
 			@imgManager.loadImageRels()
+		if event=='rendered'
+			if @qrQueue.length==0 then @finished()
 	get:(data)->
 		if data=='loopType'
 			templaterState=@manager.getInstance('templaterState')
@@ -88,6 +90,7 @@ class ImageModule
 				.replaceImages()
 		catch e
 			@on('error',e)
+	finished:->
 	on:(event,data)->
 		if event=='error'
 			throw data
