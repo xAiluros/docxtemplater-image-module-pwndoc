@@ -21,7 +21,9 @@ module.exports= class DocxQrCode
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= @result
-			testdoc= new _this.xmlTemplater.currentClass @result,{Tags:_this.xmlTemplater.Tags}
+			testdoc= new _this.xmlTemplater.currentClass @result,
+				Tags:_this.xmlTemplater.Tags
+				parser:_this.xmlTemplater.parser
 			testdoc.render()
 			_this.result=testdoc.content
 			_this.searchImage()
