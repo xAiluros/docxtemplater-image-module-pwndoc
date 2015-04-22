@@ -22,7 +22,7 @@ module.exports = class ImgManager
 	hasImage:(fileName)->
 		@zip.files[fileName]?
 	loadImageRels: () ->
-		file=@zip.files["word/_rels/#{@endFileName}.xml.rels"]
+		file=@zip.files["word/_rels/#{@endFileName}.xml.rels"] || @zip.files["word/_rels/document.xml.rels"]
 		if file==undefined then return
 		content= DocUtils.decode_utf8 file.asText()
 		@xmlDoc= DocUtils.Str2xml content

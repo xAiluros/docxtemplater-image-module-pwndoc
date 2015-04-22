@@ -53,21 +53,21 @@ class ImageModule
 			imgBuffer=@getImageFromData(imgData)
 		catch e
 			return @replaceBy(startEnd,tagXml)
-		rId=@imgManager
-			.loadImageRels()
-			.addImageRels(@getNextImageName(),imgBuffer)
+		imageRels=@imgManager.loadImageRels();
+		if imageRels
+			rId=imageRels.addImageRels(@getNextImageName(),imgBuffer)
 
-		sizePixel=@getSizeFromData(imgBuffer)
-		size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
+			sizePixel=@getSizeFromData(imgBuffer)
+			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
-		if @options.centered==false
-			outsideElement=tagXml
-			newText=@getImageXml(rId,size)
-		if @options.centered==true
-			outsideElement=tagXml.substr(0,1)+':p'
-			newText=@getImageXmlCentered(rId,size)
+			if @options.centered==false
+				outsideElement=tagXml
+				newText=@getImageXml(rId,size)
+			if @options.centered==true
+				outsideElement=tagXml.substr(0,1)+':p'
+				newText=@getImageXmlCentered(rId,size)
 
-		@replaceBy(newText,outsideElement)
+			@replaceBy(newText,outsideElement)
 	replaceQr:->
 		xmlTemplater=@manager.getInstance('xmlTemplater')
 		imR=new ImgReplacer(xmlTemplater,@imgManager)
