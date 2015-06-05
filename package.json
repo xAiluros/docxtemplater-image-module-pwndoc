@@ -13,6 +13,10 @@
     "gulp-uglify": "~0.3.0",
     "gulp-watch": "~0.6.5"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-xml-templating/docxtemplater-image-module"
+  },
   "author": "Edgar Hipp",
   "license": "MIT",
   "dependencies": {
