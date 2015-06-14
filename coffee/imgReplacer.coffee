@@ -52,23 +52,19 @@ module.exports= class ImgReplacer
 		if imageTag==undefined then throw new Error('imageTag undefined')
 		replacement= DocUtils.xml2Str imageTag
 		@xmlTemplater.content= @xmlTemplater.content.replace(match[0], replacement)
-		if DocUtils.env=='browser'
-			@qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,num,@getDataFromString)
-			@qr[u].decode(@imageSetter)
+		mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary(),num:num}
+		if /\.png$/.test(oldFile.name)
+			do (imgName) =>
+				base64= JSZip.base64.encode oldFile.asBinary()
+				binaryData = new Buffer(base64, 'base64')
+				png= new PNG(binaryData)
+				finished= (a) =>
+					png.decoded= a
+					try
+						@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,num,@getDataFromString)
+						@qr[u].decode(@imageSetter)
+					catch e
+						@imageSetter(mockedQrCode)
+				dat= png.decode(finished)
 		else
-			mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary(),num:num}
-			if /\.png$/.test(oldFile.name)
-				do (imgName) =>
-					base64= JSZip.base64.encode oldFile.asBinary()
-					binaryData = new Buffer(base64, 'base64')
-					png= new PNG(binaryData)
-					finished= (a) =>
-						png.decoded= a
-						try
-							@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,num,@getDataFromString)
-							@qr[u].decode(@imageSetter)
-						catch e
-							@imageSetter(mockedQrCode)
-					dat= png.decode(finished)
-			else
-				@imageSetter(mockedQrCode)
+			@imageSetter(mockedQrCode)

@@ -1,5 +1,4 @@
 DocXTemplater=require('docxtemplater')
-DocUtils=DocXTemplater.DocUtils
 
 vm=require('vm')
 JSZip=require('jszip')
@@ -11,8 +10,6 @@ module.exports= class DocxQrCode
 		@callbacked=false
 		@data=imageData
 		if @data==undefined then throw new Error("data of qrcode can't be undefined")
-		if DocUtils.env=='browser'
-			@base64Data=JSZip.base64.encode(@data)
 		@ready=false
 		@result=null
 	decode:(@callback) ->
@@ -27,10 +24,7 @@ module.exports= class DocxQrCode
 			testdoc.render()
 			_this.result=testdoc.content
 			_this.searchImage()
-		if DocUtils.env=='browser'
-			@qr.decode("data:image/png;base64,#{@base64Data}")
-		else
-			@qr.decode(@data,@data.decoded)
+		@qr.decode(@data,@data.decoded)
 	searchImage:() ->
 		cb=(err,@data=@data.data)=>
 			if err then console.error err
