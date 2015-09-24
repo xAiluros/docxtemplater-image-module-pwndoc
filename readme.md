@@ -15,10 +15,10 @@ install this module: `npm install docxtemplater-image-module`
 
 Your docx should contain the text: `{%image}`
 
-    ImageModule=require(‘docxtemplater-image-module’)
+    var ImageModule=require('docxtemplater-image-module')
 
-    imageModule=new ImageModule({centered:false})
-    opts = {}
+    var opts = {}
+    opts.centered = false;
     opts.getImage=function(tagValue) {
         return fs.readFileSync(tagValue,'binary');
     }
@@ -27,13 +27,15 @@ Your docx should contain the text: `{%image}`
         return [150,150];
     }
 
-    docx=new DocxGen()
+    var imageModule=new ImageModule(opts);
+
+    var docx=new DocxGen()
         .attachModule(imageModule)
         .load(content)
         .setData({image:'examples/image.png'})
         .render()
 
-    buffer= docx
+    var buffer= docx
             .getZip()
             .generate({type:"nodebuffer"})
 
@@ -56,11 +58,14 @@ If your template is :
 
 One of the most useful cases of this is to set the images to be the size of that image.
 
-For this, you will need to install the [npm package ‘image-size’](https://www.npmjs.com/package/image-size)
+For this, you will need to install the [npm package 'image-size'](https://www.npmjs.com/package/image-size)
 then, write:
 
     opts = {centered:false}
-    opts.getImage=function(img) {
+    opts.getImage=function(tagValue) {
+        return fs.readFileSync(tagValue,'binary');
+    }
+    opts.getSize=function(img) {
        sizeOf=require('image-size');
        sizeObj=sizeOf(img);
        console.log(sizeObj);
@@ -70,11 +75,11 @@ then, write:
 
 # Centering images
 
- You can center the images using new ImageModule({centered:true}) instead
+ You can center the images using opts.centered=true instead
 
 # Notice
 
- For the imagereplacer to work, the image tag: `{%image}` need to be in its own `<w:p>`, so that means that you have to put a new line after and before the tag.
+ For the imagereplacer to work, the image tag: `{%image}` needs to be in its own `<w:p>`, so that means that you have to put a new line after and before the tag.
 
 # Building
 
@@ -82,4 +87,4 @@ then, write:
 
 # Testing
 
-You can test that everything works fine using the command `mocha`. This will also create 3 docx files under the root directory that you can open to check if the docx are correct
+You can test that everything works fine using the command `mocha`. This will also create some docx files under the root directory that you can open to check if the generation was correct.
