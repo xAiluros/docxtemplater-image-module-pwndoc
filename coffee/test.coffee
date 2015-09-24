@@ -12,6 +12,15 @@ fileNames=[
 	'qrExample2.docx',
 ]
 
+opts={}
+beforeEach ()->
+	opts={}
+	opts.getImage=(tagValue)->
+		fs.readFileSync(tagValue,'binary')
+	opts.getSize=(imgBuffer,tagValue)->
+		[150,150]
+	opts.centered = false
+
 ImageModule=require('../js/index.js')
 
 docX={}
@@ -33,7 +42,7 @@ for name in fileNames
 describe 'image adding with {% image} syntax', ()->
 	it 'should work with one image',()->
 		name='imageExample.docx'
-		imageModule=new ImageModule({centered:false})
+		imageModule=new ImageModule(opts)
 		docX[name].attachModule(imageModule)
 		out=docX[name]
 			.load(docX[name].loadedContent)
@@ -61,7 +70,8 @@ describe 'image adding with {% image} syntax', ()->
 	it 'should work with centering',()->
 		d=new DocxGen()
 		name='imageExample.docx'
-		imageModule=new ImageModule({centered:true})
+		opts.centered = true
+		imageModule=new ImageModule(opts)
 		d.attachModule(imageModule)
 		out=d
 			.load(docX[name].loadedContent)
@@ -92,7 +102,8 @@ describe 'image adding with {% image} syntax', ()->
 	it 'should work with loops',()->
 		name='imageLoopExample.docx'
 
-		imageModule=new ImageModule({centered:true})
+		opts.centered = true
+		imageModule=new ImageModule(opts)
 		docX[name].attachModule(imageModule)
 
 		out=docX[name]
@@ -124,10 +135,10 @@ describe 'image adding with {% image} syntax', ()->
 
 		buffer=zip.generate({type:"nodebuffer"})
 		fs.writeFile("test_multi.docx",buffer);
-	
+
 	it 'should work with image in header/footer',()->
 		name='imageHeaderFooterExample.docx'
-		imageModule=new ImageModule({centered:false})
+		imageModule=new ImageModule(opts)
 		docX[name].attachModule(imageModule)
 		out=docX[name]
 			.load(docX[name].loadedContent)
@@ -176,10 +187,10 @@ describe 'qrcode replacing',->
 		zip=null
 		before (done)->
 			name='qrExample.docx'
+			opts.qrCode = true
+			imageModule=new ImageModule(opts)
 
-			imageModule=new ImageModule({qrCode:true})
-
-			imageModule.getImageFromData=(imgData)->
+			imageModule.getImage=(imgData)->
 				d=fs.readFileSync('examples/'+imgData,'binary')
 				d
 
@@ -211,9 +222,10 @@ describe 'qrcode replacing',->
 		before (done)->
 			name='qrExample2.docx'
 
-			imageModule=new ImageModule({qrCode:true})
+			opts.qrCode = true
+			imageModule=new ImageModule(opts)
 
-			imageModule.getImageFromData=(imgData)->
+			imageModule.getImage=(imgData)->
 				d=fs.readFileSync('examples/'+imgData,'binary')
 				d
 
@@ -246,7 +258,8 @@ describe 'qrcode replacing',->
 		before (done)->
 			d=new DocxGen()
 			name='noImage.docx'
-			imageModule=new ImageModule({qrCode:true})
+			opts.qrCode = true
+			imageModule=new ImageModule(opts)
 
 			imageModule.finished=()->
 				zip=d.getZip()

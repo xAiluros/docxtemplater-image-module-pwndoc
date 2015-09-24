@@ -6,6 +6,8 @@ fs=require('fs')
 class ImageModule
 	constructor:(@options={})->
 		if !@options.centered? then @options.centered=false
+		if !@options.getImage? then throw new Error("You should pass getImage")
+		if !@options.getSize? then throw new Error("You should pass getSize")
 		@qrQueue=[]
 		@imageNumber=1
 	handleEvent:(event,eventData)->
@@ -35,29 +37,25 @@ class ImageModule
 		xmlTemplater.replaceXml(subContent,text)
 	convertPixelsToEmus:(pixel)->
 		Math.round(pixel * 9525)
-	getSizeFromData:(imgData)->
-		[150,150]
-	getImageFromData:(imgData)->
-		fs.readFileSync(imgData)
 	replaceTag:->
 		scopeManager=@manager.getInstance('scopeManager')
 		templaterState=@manager.getInstance('templaterState')
 
 		tag = templaterState.textInsideTag.substr(1)
-		imgData=scopeManager.getValueFromScope(tag)
+		tagValue = scopeManager.getValue(tag)
 
 		tagXml=@manager.getInstance('xmlTemplater').tagXml
 		startEnd= "<#{tagXml}></#{tagXml}>"
-		if imgData=='undefined' then return @replaceBy(startEnd,tagXml)
+		if !tagValue? then return @replaceBy(startEnd,tagXml)
 		try
-			imgBuffer=@getImageFromData(imgData)
+			imgBuffer=@options.getImage(tagValue)
 		catch e
 			return @replaceBy(startEnd,tagXml)
 		imageRels=@imgManager.loadImageRels();
 		if imageRels
 			rId=imageRels.addImageRels(@getNextImageName(),imgBuffer)
 
-			sizePixel=@getSizeFromData(imgBuffer)
+			sizePixel=@options.getSize(imgBuffer, tagValue)
 			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
 			if @options.centered==false
@@ -72,10 +70,10 @@ class ImageModule
 		xmlTemplater=@manager.getInstance('xmlTemplater')
 		imR=new ImgReplacer(xmlTemplater,@imgManager)
 		imR.getDataFromString=(result,cb)=>
-			if @getImageFromDataAsync?
-				@getImageFromDataAsync(result,cb)
+			if @getImageAsync?
+				@getImageAsync(result,cb)
 			else
-				cb(null,@getImageFromData(result))
+				cb(null,@getImage(result))
 		imR.pushQrQueue=(num)=>
 			@qrQueue.push(num)
 		imR.popQrQueue=(num)=>
