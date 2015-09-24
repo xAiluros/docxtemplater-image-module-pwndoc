@@ -1,4 +1,4 @@
-First module for docxtemplater.
+The v1 has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage (v1)
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater-image-module.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater-image-module)
 [![Download count](http://img.shields.io/npm/dm/docxtemplater-image-module.svg?style=flat)](https://www.npmjs.org/package/docxtemplater-image-module)
@@ -11,13 +11,21 @@ You will need docxtemplater v1: `npm install docxtemplater`
 
 install this module: `npm install docxtemplater-image-module`
 
-# Usage
+# Usage (v1)
 
 Your docx should contain the text: `{%image}`
 
     ImageModule=require(‘docxtemplater-image-module’)
 
     imageModule=new ImageModule({centered:false})
+    opts = {}
+    opts.getImage=function(tagValue) {
+        return fs.readFileSync(tagValue,'binary');
+    }
+
+    opts.getSize=function(img,tagValue) {
+        return [150,150];
+    }
 
     docx=new DocxGen()
         .attachModule(imageModule)
@@ -31,25 +39,38 @@ Your docx should contain the text: `{%image}`
 
     fs.writeFile("test.docx",buffer);
 
-# Options
 
- You can center the images using new ImageModule({centered:true}) instead
+To understand what `img` and `tagValue` mean, lets take an example :
 
-## Size
+If your template is :
 
-You can set the size of the image to what ever you want in pixel. By default it will be 150x150.
+    {%myImage}
+
+    and your data:
+
+    {
+        "myImage":'sampleImage.png'
+    }
+
+    tagValue will be equal to "sampleImage.png" , and img will be what ever the getImage function returned
+
 One of the most useful cases of this is to set the images to be the size of that image.
 
 For this, you will need to install the [npm package ‘image-size’](https://www.npmjs.com/package/image-size)
 then, write:
 
-    imageModule=new ImageModule({centered:false})
-    imageModule.getSizeFromData=function(imgData) {
+    opts = {centered:false}
+    opts.getImage=function(img) {
        sizeOf=require('image-size');
-       sizeObj=sizeOf(imgData);
+       sizeObj=sizeOf(img);
        console.log(sizeObj);
        return [sizeObj.width,sizeObj.height];
     }
+    imageModule=new ImageModule(opts)
+
+# Centering images
+
+ You can center the images using new ImageModule({centered:true}) instead
 
 # Notice
 
