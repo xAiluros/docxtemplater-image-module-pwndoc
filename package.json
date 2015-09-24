@@ -20,7 +20,7 @@
   "author": "Edgar Hipp",
   "license": "MIT",
   "dependencies": {
-    "docxtemplater": "^1.0.5",
+    "docxtemplater": "^1.0.8",
     "gulp-browserify": "^0.5.0",
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
