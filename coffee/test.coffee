@@ -53,7 +53,7 @@ describe 'image adding with {% image} syntax', ()->
 
 		imageFile=zip.files['word/media/image_generated_1.png']
 		expect(imageFile?).to.equal(true)
-		expect(imageFile.asText().length).to.equal(17417)
+		expect(imageFile.asText().length).to.be.within(17417,17440)
 
 		relsFile=zip.files['word/_rels/document.xml.rels']
 		expect(relsFile?).to.equal(true)
@@ -65,7 +65,7 @@ describe 'image adding with {% image} syntax', ()->
 		documentContent=documentFile.asText()
 		# expect(documentContent).to.equal("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:drawing>\n  <wp:inline distT="0" distB="0" distL="0" distR="0">\n    <wp:extent cx="1905000" cy="1905000"/>\n    <wp:effectExtent l="0" t="0" r="0" b="0"/>\n    <wp:docPr id="2" name="Image 2" descr="description"/>\n    <wp:cNvGraphicFramePr>\n      <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>\n    </wp:cNvGraphicFramePr>\n    <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">\n      <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">\n        <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">\n          <pic:nvPicPr>\n            <pic:cNvPr id="0" name="Picture 1" descr="description"/>\n            <pic:cNvPicPr>\n              <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>\n            </pic:cNvPicPr>\n          </pic:nvPicPr>\n          <pic:blipFill>\n            <a:blip r:embed="rId6">\n              <a:extLst>\n                <a:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">\n                  <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"/>\n                </a:ext>\n              </a:extLst>\n            </a:blip>\n            <a:srcRect/>\n            <a:stretch>\n              <a:fillRect/>\n            </a:stretch>\n          </pic:blipFill>\n          <pic:spPr bwMode="auto">\n            <a:xfrm>\n              <a:off x="0" y="0"/>\n              <a:ext cx="1905000" cy="1905000"/>\n            </a:xfrm>\n            <a:prstGeom prst="rect">\n              <a:avLst/>\n            </a:prstGeom>\n            <a:noFill/>\n            <a:ln>\n              <a:noFill/>\n            </a:ln>\n          </pic:spPr>\n        </pic:pic>\n      </a:graphicData>\n    </a:graphic>\n  </wp:inline>\n</w:drawing></w:r><w:bookmarkStart w:id="13" w:name="_GoBack"/><w:bookmarkEnd w:id="13"/></w:p><w:sectPr><w:headerReference w:type="default" r:id="hId0"/><w:type w:val="continuous"/><w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/><w:pgMar w:top="2810" w:left="1800" w:right="1800" w:bottom="1440"/><w:cols w:num="1" w:sep="off" w:equalWidth="1"/></w:sectPr></w:body></w:document>""")
 
-		fs.writeFile("test.docx",zip.generate({type:"nodebuffer"}));
+		fs.writeFile("test.docx",zip.generate({type:"nodebuffer"}))
 
 	it 'should work with centering',()->
 		d=new DocxGen()
@@ -81,7 +81,7 @@ describe 'image adding with {% image} syntax', ()->
 		zip=out.getZip()
 		imageFile=zip.files['word/media/image_generated_1.png']
 		expect(imageFile?).to.equal(true)
-		expect(imageFile.asText().length).to.equal(17417)
+		expect(imageFile.asText().length).to.be.within(17417,17440)
 
 		relsFile=zip.files['word/_rels/document.xml.rels']
 		expect(relsFile?).to.equal(true)
@@ -96,7 +96,7 @@ describe 'image adding with {% image} syntax', ()->
 		# expect(documentContent).to.contain('align')
 		# expect(documentContent).to.contain('center')
 
-		fs.writeFile("test_center.docx",zip.generate({type:"nodebuffer"}));
+		fs.writeFile("test_center.docx",zip.generate({type:"nodebuffer"}))
 
 
 	it 'should work with loops',()->
@@ -117,11 +117,11 @@ describe 'image adding with {% image} syntax', ()->
 
 		imageFile=zip.files['word/media/image_generated_1.png']
 		expect(imageFile?).to.equal(true)
-		expect(imageFile.asText().length).to.equal(17417)
+		expect(imageFile.asText().length).to.be.within(17417,17440)
 
 		imageFile2=zip.files['word/media/image_generated_2.png']
 		expect(imageFile2?).to.equal(true)
-		expect(imageFile2.asText().length).to.equal(7177)
+		expect(imageFile2.asText().length).to.be.within(7177,7181)
 
 		relsFile=zip.files['word/_rels/document.xml.rels']
 		expect(relsFile?).to.equal(true)
@@ -134,7 +134,7 @@ describe 'image adding with {% image} syntax', ()->
 		# expect(documentContent).to.equal("""<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:t xml:space=\"preserve\"></w:t></w:r></w:p><w:p><w:pPr></w:pPr></w:p><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:drawing>\n  <wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\n    <wp:extent cx=\"1905000\" cy=\"1905000\"/>\n    <wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>\n    <wp:docPr id=\"2\" name=\"Image 2\" descr=\"description\"/>\n    <wp:cNvGraphicFramePr>\n      <a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>\n    </wp:cNvGraphicFramePr>\n    <a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\n      <a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">\n        <pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">\n          <pic:nvPicPr>\n            <pic:cNvPr id=\"0\" name=\"Picture 1\" descr=\"description\"/>\n            <pic:cNvPicPr>\n              <a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/>\n            </pic:cNvPicPr>\n          </pic:nvPicPr>\n          <pic:blipFill>\n            <a:blip r:embed=\"rId6\">\n              <a:extLst>\n                <a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\">\n                  <a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/>\n                </a:ext>\n              </a:extLst>\n            </a:blip>\n            <a:srcRect/>\n            <a:stretch>\n              <a:fillRect/>\n            </a:stretch>\n          </pic:blipFill>\n          <pic:spPr bwMode=\"auto\">\n            <a:xfrm>\n              <a:off x=\"0\" y=\"0\"/>\n              <a:ext cx=\"1905000\" cy=\"1905000\"/>\n            </a:xfrm>\n            <a:prstGeom prst=\"rect\">\n              <a:avLst/>\n            </a:prstGeom>\n            <a:noFill/>\n            <a:ln>\n              <a:noFill/>\n            </a:ln>\n          </pic:spPr>\n        </pic:pic>\n      </a:graphicData>\n    </a:graphic>\n  </wp:inline>\n</w:drawing></w:r></w:p><w:p><w:pPr></w:pPr></w:p><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:t xml:space=\"preserve\"></w:t></w:r></w:p><w:p><w:pPr></w:pPr></w:p><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:drawing>\n  <wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\n    <wp:extent cx=\"1905000\" cy=\"1905000\"/>\n    <wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>\n    <wp:docPr id=\"2\" name=\"Image 2\" descr=\"description\"/>\n    <wp:cNvGraphicFramePr>\n      <a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>\n    </wp:cNvGraphicFramePr>\n    <a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\n      <a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">\n        <pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">\n          <pic:nvPicPr>\n            <pic:cNvPr id=\"0\" name=\"Picture 1\" descr=\"description\"/>\n            <pic:cNvPicPr>\n              <a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/>\n            </pic:cNvPicPr>\n          </pic:nvPicPr>\n          <pic:blipFill>\n            <a:blip r:embed=\"rId7\">\n              <a:extLst>\n                <a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\">\n                  <a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/>\n                </a:ext>\n              </a:extLst>\n            </a:blip>\n            <a:srcRect/>\n            <a:stretch>\n              <a:fillRect/>\n            </a:stretch>\n          </pic:blipFill>\n          <pic:spPr bwMode=\"auto\">\n            <a:xfrm>\n              <a:off x=\"0\" y=\"0\"/>\n              <a:ext cx=\"1905000\" cy=\"1905000\"/>\n            </a:xfrm>\n            <a:prstGeom prst=\"rect\">\n              <a:avLst/>\n            </a:prstGeom>\n            <a:noFill/>\n            <a:ln>\n              <a:noFill/>\n            </a:ln>\n          </pic:spPr>\n        </pic:pic>\n      </a:graphicData>\n    </a:graphic>\n  </wp:inline>\n</w:drawing></w:r></w:p><w:p><w:pPr></w:pPr></w:p><w:p><w:pPr></w:pPr><w:r><w:rPr></w:rPr><w:t xml:space=\"preserve\"></w:t></w:r><w:bookmarkStart w:id=\"20\" w:name=\"_GoBack\"/><w:bookmarkEnd w:id=\"20\"/></w:p><w:sectPr><w:headerReference w:type=\"default\" r:id=\"hId0\"/><w:type w:val=\"continuous\"/><w:pgSz w:w=\"12240\" w:h=\"15840\" w:orient=\"portrait\"/><w:pgMar w:top=\"2810\" w:left=\"1800\" w:right=\"1800\" w:bottom=\"1440\"/><w:cols w:num=\"1\" w:sep=\"off\" w:equalWidth=\"1\"/></w:sectPr></w:body></w:document>""")
 
 		buffer=zip.generate({type:"nodebuffer"})
-		fs.writeFile("test_multi.docx",buffer);
+		fs.writeFile("test_multi.docx",buffer)
 
 	it 'should work with image in header/footer',()->
 		name='imageHeaderFooterExample.docx'
@@ -149,11 +149,11 @@ describe 'image adding with {% image} syntax', ()->
 
 		imageFile=zip.files['word/media/image_generated_1.png']
 		expect(imageFile?).to.equal(true)
-		expect(imageFile.asText().length).to.equal(17417)
+		expect(imageFile.asText().length).to.be.within(17417,17440)
 
 		imageFile2=zip.files['word/media/image_generated_2.png']
 		expect(imageFile2?).to.equal(true)
-		expect(imageFile2.asText().length).to.equal(17417)
+		expect(imageFile2.asText().length).to.be.within(17417,17440)
 
 		relsFile=zip.files['word/_rels/document.xml.rels']
 		expect(relsFile?).to.equal(true)
@@ -180,7 +180,7 @@ describe 'image adding with {% image} syntax', ()->
 		expect(documentContent).to.equal("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<w:document xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body><w:p><w:pPr><w:pStyle w:val="Normal"/><w:rPr></w:rPr></w:pPr><w:r><w:rPr></w:rPr></w:r></w:p><w:sectPr><w:headerReference w:type="default" r:id="rId2"/><w:footerReference w:type="default" r:id="rId3"/><w:type w:val="nextPage"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:left="1800" w:right="1800" w:header="720" w:top="2810" w:footer="1440" w:bottom="2003" w:gutter="0"/><w:pgNumType w:fmt="decimal"/><w:formProt w:val="false"/><w:textDirection w:val="lrTb"/><w:docGrid w:type="default" w:linePitch="249" w:charSpace="2047"/></w:sectPr></w:body></w:document>""")
 
-		fs.writeFile("test_header_footer.docx",zip.generate({type:"nodebuffer"}));
+		fs.writeFile("test_header_footer.docx",zip.generate({type:"nodebuffer"}))
 
 describe 'qrcode replacing',->
 	describe 'shoud work without loops',->
@@ -197,7 +197,7 @@ describe 'qrcode replacing',->
 			imageModule.finished=()->
 				zip=docX[name].getZip()
 				buffer=zip.generate({type:"nodebuffer"})
-				fs.writeFile("test_qr.docx",buffer);
+				fs.writeFile("test_qr.docx",buffer)
 				done()
 
 
@@ -215,7 +215,7 @@ describe 'qrcode replacing',->
 			images=zip.file(/media\/.*.png/)
 			expect(images.length).to.equal(2)
 			expect(images[0].asText().length).to.equal(826)
-			expect(images[1].asText().length).to.equal(17417)
+			expect(images[1].asText().length).to.be.within(17417,17440)
 
 	describe 'should work with two',->
 		zip=null
@@ -232,7 +232,7 @@ describe 'qrcode replacing',->
 			imageModule.finished=()->
 				zip=docX[name].getZip()
 				buffer=zip.generate({type:"nodebuffer"})
-				fs.writeFile("test_qr2.docx",buffer);
+				fs.writeFile("test_qr2.docx",buffer)
 				done()
 
 
@@ -250,8 +250,8 @@ describe 'qrcode replacing',->
 			expect(images.length).to.equal(4)
 			expect(images[0].asText().length).to.equal(859)
 			expect(images[1].asText().length).to.equal(826)
-			expect(images[2].asText().length).to.equal(17417)
-			expect(images[3].asText().length).to.equal(7177)
+			expect(images[2].asText().length).to.be.within(17417,17440)
+			expect(images[3].asText().length).to.be.within(7177,7181)
 
 	describe 'should work without images (it should call finished())',()->
 		d=null
@@ -264,7 +264,7 @@ describe 'qrcode replacing',->
 			imageModule.finished=()->
 				zip=d.getZip()
 				buffer=zip.generate({type:"nodebuffer"})
-				fs.writeFile("testNoImage.docx",buffer);
+				fs.writeFile("testNoImage.docx",buffer)
 				done()
 
 			d.attachModule(imageModule)
