@@ -19,11 +19,11 @@ Your docx should contain the text: `{%image}`
 
     var opts = {}
     opts.centered = false;
-    opts.getImage=function(tagValue) {
+    opts.getImage=function(tagValue, tagName) {
         return fs.readFileSync(tagValue,'binary');
     }
 
-    opts.getSize=function(img,tagValue) {
+    opts.getSize=function(img,tagValue, tagName) {
         return [150,150];
     }
 
@@ -42,7 +42,7 @@ Your docx should contain the text: `{%image}`
     fs.writeFile("test.docx",buffer);
 
 
-To understand what `img` and `tagValue` mean, lets take an example :
+To understand what `img`, `tagValue`, `tagName` mean, lets take an example :
 
 If your template is :
 
@@ -54,7 +54,7 @@ If your template is :
         "myImage":'sampleImage.png'
     }
 
-    tagValue will be equal to "sampleImage.png" , and img will be what ever the getImage function returned
+    tagValue will be equal to "sampleImage.png", tagName will be equal to "myImage" and img will be what ever the getImage function returned
 
 One of the most useful cases of this is to set the images to be the size of that image.
 
@@ -76,6 +76,26 @@ then, write:
 # Centering images
 
  You can center the images using opts.centered=true instead
+
+# Size and path based on placeholder
+
+You can have customizable image loader using the template's placeholder name.
+
+    opts.getImage = function (tagValue, tagName) {
+        if(tagName === 'logo')
+            return fs.readFileSync(__dirname + '/logos/' + tagValue);
+
+        return fs.readFileSync(__dirname + '/images/' + tagValue);
+    };
+
+The same thing can be used to customize image size.
+
+    opts.getSize = function (img, tagValue, tagName) {
+        if(tagName === 'logo')
+            return [100, 100];
+        
+        return [300, 300];
+    };
 
 # Notice
 
