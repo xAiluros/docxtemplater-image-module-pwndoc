@@ -48,14 +48,14 @@ class ImageModule
 		startEnd= "<#{tagXml}></#{tagXml}>"
 		if !tagValue? then return @replaceBy(startEnd,tagXml)
 		try
-			imgBuffer=@options.getImage(tagValue)
+			imgBuffer=@options.getImage(tagValue, tag)
 		catch e
 			return @replaceBy(startEnd,tagXml)
 		imageRels=@imgManager.loadImageRels();
 		if imageRels
 			rId=imageRels.addImageRels(@getNextImageName(),imgBuffer)
 
-			sizePixel=@options.getSize(imgBuffer, tagValue)
+			sizePixel=@options.getSize(imgBuffer, tagValue, tag)
 			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
 			if @options.centered==false
