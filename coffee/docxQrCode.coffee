@@ -24,7 +24,7 @@ module.exports= class DocxQrCode
 			testdoc.render()
 			_this.result=testdoc.content
 			_this.searchImage()
-		@qr.decode(@data,@data.decoded)
+		@qr.decode({width:@data.width,height:@data.height},@data.decoded)
 	searchImage:() ->
 		cb=(err,@data=@data.data)=>
 			if err then console.error err
