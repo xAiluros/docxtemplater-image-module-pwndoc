@@ -101,10 +101,17 @@ The same thing can be used to customize image size.
 
  For the imagereplacer to work, the image tag: `{%image}` needs to be in its own `<w:p>`, so that means that you have to put a new line after and before the tag.
 
-# Building
-
- You can build the coffee into js by running `gulp` (this will watch the directory for changes)
-
 # Testing
 
 You can test that everything works fine using the command `mocha`. This will also create some docx files under the root directory that you can open to check if the generation was correct.
+
+# Building in the browser
+
+ You can build a release for the browser with the following commands
+
+    npm install -g gulp jasmine-node uglify-js browserify
+    npm install
+    gulp allCoffee
+    mkdir build -p
+    browserify -r ./js/index.js -s ImageModule > build/imagemodule.js
+    uglifyjs build/imagemodule.js > build/imagemodule.min.js # Optional
