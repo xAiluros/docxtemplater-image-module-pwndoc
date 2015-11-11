@@ -1,3 +1,6 @@
+This is the master branch, which is not completely stable yet (version 1). No npm module has been released to npm yet.
+For up to date documentation, please switch to the 0.x branch.
+
 The v1 has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage (v1)
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater-image-module.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater-image-module)
@@ -93,7 +96,7 @@ The same thing can be used to customize image size.
     opts.getSize = function (img, tagValue, tagName) {
         if(tagName === 'logo')
             return [100, 100];
-        
+
         return [300, 300];
     };
 
