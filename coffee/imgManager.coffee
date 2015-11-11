@@ -24,7 +24,7 @@ module.exports = class ImgManager
 	loadImageRels: () ->
 		file=@zip.files["word/_rels/#{@endFileName}.xml.rels"] || @zip.files["word/_rels/document.xml.rels"]
 		if file==undefined then return
-		content= DocUtils.decode_utf8 file.asText()
+		content= DocUtils.decodeUtf8 file.asText()
 		@xmlDoc= DocUtils.Str2xml content
 		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
 		@maxRid=DocUtils.maxArray(RidArray)
@@ -32,7 +32,6 @@ module.exports = class ImgManager
 		this
 
 	addExtensionRels: (contentType,extension) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
-		#content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
 		content = @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
@@ -46,7 +45,7 @@ module.exports = class ImgManager
 			newTag.setAttribute('ContentType',contentType)
 			newTag.setAttribute('Extension',extension)
 			types.appendChild newTag
-			@setImage "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+			@setImage "[Content_Types].xml",DocUtils.encodeUtf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData,i=0) -> #Adding an image and returns it's Rid
 		realImageName=if i==0 then imageName else imageName+"(#{i})"
 		if @zip.files["word/media/#{realImageName}"]?
@@ -71,7 +70,7 @@ module.exports = class ImgManager
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{realImageName}")
 		relationships.appendChild newTag
-		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
+		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encodeUtf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
 	getImageName:(id=0)->
 		nameCandidate="Copie_"+id+".png"
