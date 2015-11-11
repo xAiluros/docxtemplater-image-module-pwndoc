@@ -22,6 +22,7 @@ module.exports= class DocxQrCode
 			_this.ready= true
 			_this.result= @result
 			testdoc= new _this.xmlTemplater.currentClass @result,
+				tags:_this.xmlTemplater.tags
 				Tags:_this.xmlTemplater.Tags
 				parser:_this.xmlTemplater.parser
 			testdoc.render()
