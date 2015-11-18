@@ -47,8 +47,15 @@ class ImageModule
 		imgData=scopeManager.getValueFromScope(tag)
 
 		tagXml=@manager.getInstance('xmlTemplater').tagXml
+		tagXmlParagraph = tagXml.substr(0,1)+':p'
+
+		if @options.centered==false
+			outsideElement=tagXml
+		if @options.centered==true
+			outsideElement=tagXmlParagraph
+
 		startEnd= "<#{tagXml}></#{tagXml}>"
-		if imgData=='undefined' then return @replaceBy(startEnd,tagXml)
+		if !imgData? or imgData=='undefined' then return @replaceBy(startEnd,outsideElement)
 		try
 			imgBuffer=@getImageFromData(imgData)
 		catch e
@@ -61,10 +68,8 @@ class ImageModule
 			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
 			if @options.centered==false
-				outsideElement=tagXml
 				newText=@getImageXml(rId,size)
 			if @options.centered==true
-				outsideElement=tagXml.substr(0,1)+':p'
 				newText=@getImageXmlCentered(rId,size)
 
 			@replaceBy(newText,outsideElement)
