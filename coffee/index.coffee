@@ -75,10 +75,10 @@ class ImageModule
 		xmlTemplater=@manager.getInstance('xmlTemplater')
 		imR=new ImgReplacer(xmlTemplater,@imgManager)
 		imR.getDataFromString=(result,cb)=>
-			if @getImageAsync?
-				@getImageAsync(result,cb)
+			if @options.getImageAsync?
+				@options.getImageAsync(result,cb)
 			else
-				cb(null,@getImage(result))
+				cb(null,@options.getImage(result))
 		imR.pushQrQueue=(num)=>
 			@qrQueue.push(num)
 		imR.popQrQueue=(num)=>
@@ -87,12 +87,16 @@ class ImageModule
 				@qrQueue.splice(found,1)
 			else @on('error',new Error("qrqueue #{num} is not in qrqueue"))
 			if @qrQueue.length==0 then @finished()
+		num=parseInt(Math.random()*10000)
+		imR.pushQrQueue("rendered-" + num)
 		try
 			imR
 				.findImages()
 				.replaceImages()
 		catch e
 			@on('error',e)
+		f=()=>imR.popQrQueue("rendered-" + num)
+		setImmediate f
 	finished:->
 	on:(event,data)->
 		if event=='error'
