@@ -45,6 +45,13 @@ class ImageModule
 		tagValue = scopeManager.getValue(tag)
 
 		tagXml=@manager.getInstance('xmlTemplater').tagXml
+		tagXmlParagraph = tagXml.substr(0,1)+':p'
+
+		if @options.centered==false
+			outsideElement=tagXml
+		if @options.centered==true
+			outsideElement=tagXmlParagraph
+
 		startEnd= "<#{tagXml}></#{tagXml}>"
 		if !tagValue? then return @replaceBy(startEnd,tagXml)
 		try
@@ -59,10 +66,8 @@ class ImageModule
 			size=[@convertPixelsToEmus(sizePixel[0]),@convertPixelsToEmus(sizePixel[1])]
 
 			if @options.centered==false
-				outsideElement=tagXml
 				newText=@getImageXml(rId,size)
 			if @options.centered==true
-				outsideElement=tagXml.substr(0,1)+':p'
 				newText=@getImageXmlCentered(rId,size)
 
 			@replaceBy(newText,outsideElement)
