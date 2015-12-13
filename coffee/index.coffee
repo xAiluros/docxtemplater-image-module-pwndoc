@@ -96,7 +96,7 @@ class ImageModule
 		catch e
 			@on('error',e)
 		f=()=>imR.popQrQueue("rendered-" + num)
-		setImmediate f
+		setTimeout f, 1
 	finished:->
 	on:(event,data)->
 		if event=='error'
