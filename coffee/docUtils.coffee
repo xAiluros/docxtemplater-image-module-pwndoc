@@ -34,9 +34,10 @@ DocUtils.pregMatchAll= (regex, content) ->
 	content=lolalolilala
 	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
 	###
-	regex= (new RegExp(regex,'g')) unless (typeof regex=='object')
+	if typeof regex!='object'
+		regex = new RegExp(regex,'g')
 	matchArray= []
-	replacer = (match,pn ..., offset, string)->
+	replacer = (match,pn..., offset, string)->
 		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 		pn.offset= offset
 		matchArray.push pn

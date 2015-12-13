@@ -51,7 +51,7 @@ class ImageModule
 			imgBuffer=@options.getImage(tagValue, tag)
 		catch e
 			return @replaceBy(startEnd,tagXml)
-		imageRels=@imgManager.loadImageRels();
+		imageRels=@imgManager.loadImageRels()
 		if imageRels
 			rId=imageRels.addImageRels(@getNextImageName(),imgBuffer)
 
