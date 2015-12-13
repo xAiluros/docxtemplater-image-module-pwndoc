@@ -245,7 +245,7 @@ describe 'qrcode replacing',->
 				images=zip.file(/media\/.*.png/)
 				expect(images.length).to.equal(3)
 				expect(images[0].asText().length).to.equal(826)
-				expect(images[1].asText().length).to.equal(12888)
+				expect(images[1].asText().length).to.be.within(12888, 12900)
 				expect(images[2].asText().length).to.be.within(17417,17440)
 				done()
 
@@ -272,7 +272,7 @@ describe 'qrcode replacing',->
 				images=zip.file(/media\/.*.png/)
 				expect(images.length).to.equal(3)
 				expect(images[0].asText().length).to.equal(826)
-				expect(images[1].asText().length).to.equal(12888)
+				expect(images[1].asText().length).to.be.within(12888, 12900)
 				expect(images[2].asText().length).to.be.within(17417,17440)
 				done()
 

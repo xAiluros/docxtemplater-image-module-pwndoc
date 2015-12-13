@@ -62,6 +62,7 @@ module.exports= class ImgReplacer
 						@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,num,@getDataFromString)
 						@qr[u].decode(@imageSetter)
 					catch e
+						console.error e
 						@imageSetter(mockedQrCode)
 				dat= png.decode(finished)
 		else
