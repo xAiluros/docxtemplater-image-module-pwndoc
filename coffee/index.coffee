@@ -44,7 +44,8 @@ class ImageModule
 		tag = templaterState.textInsideTag.substr(1)
 		tagValue = scopeManager.getValue(tag)
 
-		tagXml=@manager.getInstance('xmlTemplater').tagXml
+		xmlTemplater = @manager.getInstance('xmlTemplater')
+		tagXml=xmlTemplater.fileTypeConfig.tagsXmlArray[0]
 		tagXmlParagraph = tagXml.substr(0,1)+':p'
 
 		if @options.centered==false

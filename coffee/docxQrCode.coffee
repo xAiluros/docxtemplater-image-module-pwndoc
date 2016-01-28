@@ -1,4 +1,4 @@
-DocXTemplater=require('docxtemplater')
+XmlTemplater=require('docxtemplater').XmlTemplater
 
 vm=require('vm')
 JSZip=require('jszip')
@@ -18,7 +18,8 @@ module.exports= class DocxQrCode
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= @result
-			testdoc= new _this.xmlTemplater.currentClass @result,
+			testdoc= new XmlTemplater @result,
+				fileTypeConfig:_this.xmlTemplater.fileTypeConfig
 				tags:_this.xmlTemplater.tags
 				Tags:_this.xmlTemplater.Tags
 				parser:_this.xmlTemplater.parser

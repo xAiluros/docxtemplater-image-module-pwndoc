@@ -63,6 +63,7 @@ module.exports= class ImgReplacer
 						@qr[u].decode(@imageSetter)
 					catch e
 						console.error e
+						console.error e.stack
 						@imageSetter(mockedQrCode)
 				dat= png.decode(finished)
 		else
