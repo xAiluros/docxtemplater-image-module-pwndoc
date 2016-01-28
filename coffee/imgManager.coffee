@@ -1,14 +1,15 @@
 DocUtils=require('./docUtils')
 
+imageExtensions=['gif','jpeg','jpg','emf','png']
+
 module.exports = class ImgManager
-	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor:(@zip,@fileName)->
 		@endFileName=@fileName.replace(/^.*?([a-z0-9]+)\.xml$/,"$1")
 	getImageList: () ->
 		regex= ///
-		[^.]+  #name
-		\.   #dot
-		([^.]+)  #extension
+		[^.]+
+		\.
+		([^.]+)
 		///
 		imageList= []
 		for index of @zip.files
@@ -26,11 +27,13 @@ module.exports = class ImgManager
 		if file==undefined then return
 		content= DocUtils.decodeUtf8 file.asText()
 		@xmlDoc= DocUtils.Str2xml content
-		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
+		# Get all Rids
+		RidArray = []
+		for tag in @xmlDoc.getElementsByTagName('Relationship')
+			RidArray.push(parseInt tag.getAttribute("Id").substr(3))
 		@maxRid=DocUtils.maxArray(RidArray)
 		@imageRels=[]
 		this
-
 	addExtensionRels: (contentType,extension) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
 		content = @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content

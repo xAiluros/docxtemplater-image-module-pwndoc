@@ -32,8 +32,8 @@ class ImageModule
 		xmlTemplater=@manager.getInstance('xmlTemplater')
 		templaterState=@manager.getInstance('templaterState')
 		subContent=new SubContent(xmlTemplater.content)
-			.getInnerTag(templaterState)
-			.getOuterXml(outsideElement)
+		subContent=subContent.getInnerTag(templaterState)
+		subContent=subContent.getOuterXml(outsideElement)
 		xmlTemplater.replaceXml(subContent,text)
 	convertPixelsToEmus:(pixel)->
 		Math.round(pixel * 9525)
@@ -91,9 +91,7 @@ class ImageModule
 		num=parseInt(Math.random()*10000)
 		imR.pushQrQueue("rendered-" + num)
 		try
-			imR
-				.findImages()
-				.replaceImages()
+			imR.findImages().replaceImages()
 		catch e
 			@on('error',e)
 		f=()=>imR.popQrQueue("rendered-" + num)
