@@ -1,5 +1,3 @@
-This is the master branch, which is not completely stable yet (version 1). No npm module has been released to npm yet. For up to date documentation, please switch to the 0.x branch.
-
 This version is only compatible with docxtemplater version 2
 
 The v1 has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage (v1)
