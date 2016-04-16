@@ -1,12 +1,12 @@
 "use strict";
 
-var SubContent = require("docxtemplater").SubContent;
-var ImgManager = require("./imgManager");
-var ImgReplacer = require("./imgReplacer");
+const SubContent = require("docxtemplater").SubContent;
+const ImgManager = require("./imgManager");
+const ImgReplacer = require("./imgReplacer");
 
 class ImageModule {
-	constructor(options = {}) {
-		this.options = options;
+	constructor(options) {
+		this.options = options || {};
 		if (!(this.options.centered != null)) { this.options.centered = false; }
 		if (!(this.options.getImage != null)) { throw new Error("You should pass getImage"); }
 		if (!(this.options.getSize != null)) { throw new Error("You should pass getSize"); }
@@ -16,7 +16,7 @@ class ImageModule {
 	handleEvent(event, eventData) {
 		if (event === "rendering-file") {
 			this.renderingFileName = eventData;
-			var gen = this.manager.getInstance("gen");
+			const gen = this.manager.getInstance("gen");
 			this.imgManager = new ImgManager(gen.zip, this.renderingFileName);
 			this.imgManager.loadImageRels();
 		}
@@ -26,7 +26,7 @@ class ImageModule {
 	}
 	get(data) {
 		if (data === "loopType") {
-			var templaterState = this.manager.getInstance("templaterState");
+			const templaterState = this.manager.getInstance("templaterState");
 			if (templaterState.textInsideTag[0] === "%") {
 				return "image";
 			}
@@ -34,14 +34,14 @@ class ImageModule {
 		return null;
 	}
 	getNextImageName() {
-		var name = `image_generated_${this.imageNumber}.png`;
+		const name = `image_generated_${this.imageNumber}.png`;
 		this.imageNumber++;
 		return name;
 	}
 	replaceBy(text, outsideElement) {
-		var xmlTemplater = this.manager.getInstance("xmlTemplater");
-		var templaterState = this.manager.getInstance("templaterState");
-		var subContent = new SubContent(xmlTemplater.content);
+		const xmlTemplater = this.manager.getInstance("xmlTemplater");
+		const templaterState = this.manager.getInstance("templaterState");
+		let subContent = new SubContent(xmlTemplater.content);
 		subContent = subContent.getInnerTag(templaterState);
 		subContent = subContent.getOuterXml(outsideElement);
 		return xmlTemplater.replaceXml(subContent, text);
@@ -50,42 +50,41 @@ class ImageModule {
 		return Math.round(pixel * 9525);
 	}
 	replaceTag() {
-		var scopeManager = this.manager.getInstance("scopeManager");
-		var templaterState = this.manager.getInstance("templaterState");
-		var xmlTemplater = this.manager.getInstance("xmlTemplater");
-		var tagXml = xmlTemplater.fileTypeConfig.tagsXmlArray[0];
+		const scopeManager = this.manager.getInstance("scopeManager");
+		const templaterState = this.manager.getInstance("templaterState");
+		const xmlTemplater = this.manager.getInstance("xmlTemplater");
+		const tagXml = xmlTemplater.fileTypeConfig.tagsXmlArray[0];
+		const tagXmlParagraph = tagXml.substr(0, 1) + ":p";
 
-		var tag = templaterState.textInsideTag.substr(1);
-		var tagValue = scopeManager.getValue(tag);
+		const tag = templaterState.textInsideTag.substr(1);
+		const tagValue = scopeManager.getValue(tag);
+		const startEnd = `<${tagXml}></${tagXml}>`;
+		const outsideElement = this.options.centered ? tagXmlParagraph : tagXml;
 
 		if (tagValue == null) {
 			return this.replaceBy(startEnd, tagXml);
 		}
 
-		var tagXmlParagraph = tagXml.substr(0, 1) + ":p";
-
-		var startEnd = `<${tagXml}></${tagXml}>`;
-		var imgBuffer;
+		let imgBuffer;
 		try {
 			imgBuffer = this.options.getImage(tagValue, tag);
 		}
 		catch (e) {
 			return this.replaceBy(startEnd, tagXml);
 		}
-		var imageRels = this.imgManager.loadImageRels();
+		const imageRels = this.imgManager.loadImageRels();
 		if (!imageRels) {
 			return;
 		}
-		var rId = imageRels.addImageRels(this.getNextImageName(), imgBuffer);
-		var sizePixel = this.options.getSize(imgBuffer, tagValue, tag);
-		var size = [this.convertPixelsToEmus(sizePixel[0]), this.convertPixelsToEmus(sizePixel[1])];
-		var newText = this.options.centered ? this.getImageXmlCentered(rId, size) : this.getImageXml(rId, size);
-		var outsideElement = this.options.centered ? tagXmlParagraph : tagXml;
+		const rId = imageRels.addImageRels(this.getNextImageName(), imgBuffer);
+		const sizePixel = this.options.getSize(imgBuffer, tagValue, tag);
+		const size = [this.convertPixelsToEmus(sizePixel[0]), this.convertPixelsToEmus(sizePixel[1])];
+		const newText = this.options.centered ? this.getImageXmlCentered(rId, size) : this.getImageXml(rId, size);
 		return this.replaceBy(newText, outsideElement);
 	}
 	replaceQr() {
-		var xmlTemplater = this.manager.getInstance("xmlTemplater");
-		var imR = new ImgReplacer(xmlTemplater, this.imgManager);
+		const xmlTemplater = this.manager.getInstance("xmlTemplater");
+		const imR = new ImgReplacer(xmlTemplater, this.imgManager);
 		imR.getDataFromString = (result, cb) => {
 			if ((this.options.getImageAsync != null)) {
 				return this.options.getImageAsync(result, cb);
@@ -96,7 +95,7 @@ class ImageModule {
 			return this.qrQueue.push(num);
 		};
 		imR.popQrQueue = (num) => {
-			var found = this.qrQueue.indexOf(num);
+			const found = this.qrQueue.indexOf(num);
 			if (found !== -1) {
 				this.qrQueue.splice(found, 1);
 			}
@@ -105,7 +104,7 @@ class ImageModule {
 			}
 			if (this.qrQueue.length === 0) { return this.finished(); }
 		};
-		var num = parseInt(Math.random() * 10000, 10);
+		const num = parseInt(Math.random() * 10000, 10);
 		imR.pushQrQueue("rendered-" + num);
 		try {
 			imR.findImages().replaceImages();
@@ -113,7 +112,7 @@ class ImageModule {
 		catch (e) {
 			this.on("error", e);
 		}
-		var f = () => imR.popQrQueue("rendered-" + num);
+		const f = () => imR.popQrQueue("rendered-" + num);
 		return setTimeout(f, 1);
 	}
 	finished() {}

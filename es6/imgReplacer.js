@@ -1,9 +1,9 @@
 "use strict";
 
-var DocUtils = require("./docUtils");
-var DocxQrCode = require("./docxQrCode");
-var PNG = require("png-js");
-var base64encode = require("./base64").encode;
+const DocUtils = require("./docUtils");
+const DocxQrCode = require("./docxQrCode");
+const PNG = require("png-js");
+const base64encode = require("./base64").encode;
 
 module.exports = class ImgReplacer {
 	constructor(xmlTemplater, imgManager) {
@@ -20,8 +20,8 @@ module.exports = class ImgReplacer {
 	replaceImages() {
 		this.qr = [];
 		this.xmlTemplater.numQrCode += this.imgMatches.length;
-		var iterable = this.imgMatches;
-		for (var imgNum = 0, match; imgNum < iterable.length; imgNum++) {
+		const iterable = this.imgMatches;
+		for (let imgNum = 0, match; imgNum < iterable.length; imgNum++) {
 			match = iterable[imgNum];
 			this.replaceImage(match, imgNum);
 		}
@@ -35,7 +35,7 @@ module.exports = class ImgReplacer {
 		return this.popQrQueue(this.imgManager.fileName + "-" + docxqrCode.num, false);
 	}
 	getXmlImg(match) {
-		var baseDocument = `<?xml version="1.0" ?>
+		const baseDocument = `<?xml version="1.0" ?>
 		<w:document
 		mc:Ignorable="w14 wp14"
 		xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
@@ -54,7 +54,7 @@ module.exports = class ImgReplacer {
 			xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"
 			xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">${match[0]}</w:document>
 			`;
-		var f = function (e) {
+		const f = function (e) {
 			if (e === "fatalError") {
 				throw new Error("fatalError");
 			}
@@ -62,46 +62,46 @@ module.exports = class ImgReplacer {
 		return DocUtils.str2xml(baseDocument, f);
 	}
 	replaceImage(match, imgNum) {
-		var num = parseInt(Math.random() * 10000, 10);
-		var xmlImg;
+		const num = parseInt(Math.random() * 10000, 10);
+		let xmlImg;
 		try {
 			xmlImg = this.getXmlImg(match);
 		}
 		catch (e) {
 			return;
 		}
-		var tagrId = xmlImg.getElementsByTagName("a:blip")[0];
+		const tagrId = xmlImg.getElementsByTagName("a:blip")[0];
 		if (tagrId === undefined) { throw new Error("tagRiD undefined !"); }
-		var rId = tagrId.getAttribute("r:embed");
-		var tag = xmlImg.getElementsByTagName("wp:docPr")[0];
+		const rId = tagrId.getAttribute("r:embed");
+		const tag = xmlImg.getElementsByTagName("wp:docPr")[0];
 		if (tag === undefined) { throw new Error("tag undefined"); }
 		// if image is already a replacement then do nothing
 		if (tag.getAttribute("name").substr(0, 6) === "Copie_") { return; }
-		var imgName = this.imgManager.getImageName();
+		const imgName = this.imgManager.getImageName();
 		this.pushQrQueue(this.imgManager.fileName + "-" + num, true);
-		var newId = this.imgManager.addImageRels(imgName, "");
+		const newId = this.imgManager.addImageRels(imgName, "");
 		this.xmlTemplater.imageId++;
-		var oldFile = this.imgManager.getImageByRid(rId);
+		const oldFile = this.imgManager.getImageByRid(rId);
 		this.imgManager.setImage(this.imgManager.getFullPath(imgName), oldFile.data, {binary: true});
 		tag.setAttribute("name", `${imgName}`);
 		tagrId.setAttribute("r:embed", `rId${newId}`);
-		var imageTag = xmlImg.getElementsByTagName("w:drawing")[0];
+		const imageTag = xmlImg.getElementsByTagName("w:drawing")[0];
 		if (imageTag === undefined) { throw new Error("imageTag undefined"); }
-		var replacement = DocUtils.xml2Str(imageTag);
+		const replacement = DocUtils.xml2Str(imageTag);
 		this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
 
 		return this.decodeImage(oldFile, imgName, num, imgNum);
 	}
 	decodeImage(oldFile, imgName, num, imgNum) {
-		var mockedQrCode = {xmlTemplater: this.xmlTemplater, imgName: imgName, data: oldFile.asBinary(), num: num};
+		const mockedQrCode = {xmlTemplater: this.xmlTemplater, imgName: imgName, data: oldFile.asBinary(), num: num};
 		if (!/\.png$/.test(oldFile.name)) {
 			return this.imageSetter(mockedQrCode);
 		}
 		return ((imgName) => {
-			var base64 = base64encode(oldFile.asBinary());
-			var binaryData = new Buffer(base64, "base64");
-			var png = new PNG(binaryData);
-			var finished = (a) => {
+			const base64 = base64encode(oldFile.asBinary());
+			const binaryData = new Buffer(base64, "base64");
+			const png = new PNG(binaryData);
+			const finished = (a) => {
 				png.decoded = a;
 				try {
 					this.qr[imgNum] = new DocxQrCode(png, this.xmlTemplater, imgName, num, this.getDataFromString);

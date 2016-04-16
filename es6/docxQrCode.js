@@ -1,13 +1,12 @@
 "use strict";
 
-var XmlTemplater = require("docxtemplater").XmlTemplater;
-
-var QrCode = require("qrcode-reader");
+const XmlTemplater = require("docxtemplater").XmlTemplater;
+const QrCode = require("qrcode-reader");
 
 module.exports = class DocxQrCode {
-	constructor(imageData, xmlTemplater, imgName = "", num, getDataFromString) {
+	constructor(imageData, xmlTemplater, imgName, num, getDataFromString) {
 		this.xmlTemplater = xmlTemplater;
-		this.imgName = imgName;
+		this.imgName = imgName || "";
 		this.num = num;
 		this.getDataFromString = getDataFromString;
 		this.callbacked = false;
@@ -18,12 +17,12 @@ module.exports = class DocxQrCode {
 	}
 	decode(callback) {
 		this.callback = callback;
-		var self = this;
+		const self = this;
 		this.qr = new QrCode();
 		this.qr.callback = function () {
 			self.ready = true;
 			self.result = this.result;
-			var testdoc = new XmlTemplater(this.result,
+			const testdoc = new XmlTemplater(this.result,
 				{fileTypeConfig: self.xmlTemplater.fileTypeConfig,
 				tags: self.xmlTemplater.tags,
 				Tags: self.xmlTemplater.Tags,
@@ -36,8 +35,8 @@ module.exports = class DocxQrCode {
 		return this.qr.decode({width: this.data.width, height: this.data.height}, this.data.decoded);
 	}
 	searchImage() {
-		var cb = (_err, data = this.data.data) => {
-			this.data = data;
+		const cb = (_err, data) => {
+			this.data = data || this.data.data;
 			return this.callback(this, this.imgName, this.num);
 		};
 		if (!(this.result != null)) { return cb(); }
