@@ -31,7 +31,7 @@ module.exports = class ImgManager {
 	}
 	loadImageRels() {
 		const file = this.zip.files[`word/_rels/${this.endFileName}.xml.rels`] || this.zip.files["word/_rels/document.xml.rels"];
-		if (file === undefined) { return; }
+		if (file == null) { return; }
 		const content = DocUtils.decodeUtf8(file.asText());
 		this.xmlDoc = DocUtils.str2xml(content);
 		// Get all Rids

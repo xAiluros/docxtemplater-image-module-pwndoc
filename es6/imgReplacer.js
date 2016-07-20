@@ -71,10 +71,10 @@ module.exports = class ImgReplacer {
 			return;
 		}
 		const tagrId = xmlImg.getElementsByTagName("a:blip")[0];
-		if (tagrId === undefined) { throw new Error("tagRiD undefined !"); }
+		if (tagrId == null) { throw new Error("tagRiD undefined !"); }
 		const rId = tagrId.getAttribute("r:embed");
 		const tag = xmlImg.getElementsByTagName("wp:docPr")[0];
-		if (tag === undefined) { throw new Error("tag undefined"); }
+		if (tag == null) { throw new Error("tag undefined"); }
 		// if image is already a replacement then do nothing
 		if (tag.getAttribute("name").substr(0, 6) === "Copie_") { return; }
 		const imgName = this.imgManager.getImageName();
@@ -86,7 +86,7 @@ module.exports = class ImgReplacer {
 		tag.setAttribute("name", `${imgName}`);
 		tagrId.setAttribute("r:embed", `rId${newId}`);
 		const imageTag = xmlImg.getElementsByTagName("w:drawing")[0];
-		if (imageTag === undefined) { throw new Error("imageTag undefined"); }
+		if (imageTag == null) { throw new Error("imageTag undefined"); }
 		const replacement = DocUtils.xml2Str(imageTag);
 		this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
 

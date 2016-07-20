@@ -7,9 +7,9 @@ const ImgReplacer = require("./imgReplacer");
 class ImageModule {
 	constructor(options) {
 		this.options = options || {};
-		if (!(this.options.centered != null)) { this.options.centered = false; }
-		if (!(this.options.getImage != null)) { throw new Error("You should pass getImage"); }
-		if (!(this.options.getSize != null)) { throw new Error("You should pass getSize"); }
+		if (this.options.centered == null) { this.options.centered = false; }
+		if (this.options.getImage == null) { throw new Error("You should pass getImage"); }
+		if (this.options.getSize == null) { throw new Error("You should pass getSize"); }
 		this.qrQueue = [];
 		this.imageNumber = 1;
 	}
