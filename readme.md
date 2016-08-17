@@ -1,18 +1,18 @@
 This version is only compatible with docxtemplater version 2
 
-The v1 has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage (v1)
+The version 1 of this module has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater-image-module.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater-image-module) [![Download count](http://img.shields.io/npm/dm/docxtemplater-image-module.svg?style=flat)](https://www.npmjs.org/package/docxtemplater-image-module) [![Current tag](http://img.shields.io/npm/v/docxtemplater-image-module.svg?style=flat)](https://www.npmjs.org/package/docxtemplater-image-module) [![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater-image-module/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater-image-module)
 
 Installation:
 =============
 
-You will need docxtemplater v1: `npm install docxtemplater`
+You will need docxtemplater version 2: `npm install docxtemplater`
 
 install this module: `npm install docxtemplater-image-module`
 
-Usage (v1)
-==========
+Usage
+=====
 
 Your docx should contain the text: `{%image}`
 
