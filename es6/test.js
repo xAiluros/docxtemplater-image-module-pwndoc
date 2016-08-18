@@ -17,6 +17,7 @@ const fileNames = [
 	"qrHeader.docx",
 	"qrHeaderNoImage.docx",
 	"expectedNoImage.docx",
+	"withoutRels.docx",
 ];
 
 const shouldBeSame = function (zip1, zip2) {
@@ -105,6 +106,30 @@ describe("image adding with {% image} syntax", function () {
 		expect(relsFile != null, "No rels file found").to.equal(true);
 		const relsFileContent = relsFile.asText();
 		expectNormalCharacters(relsFileContent, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/><Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/><Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes\" Target=\"endnotes.xml\"/><Relationship Id=\"hId0\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header\" Target=\"header0.xml\"/><Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image_generated_1.png\"/></Relationships>");
+
+		const documentFile = zip.files["word/document.xml"];
+		expect(documentFile != null, "No document file found").to.equal(true);
+		documentFile.asText();
+	});
+
+	it("should work without initial rels", function () {
+		const name = "withoutRels.docx";
+		const imageModule = new ImageModule(opts);
+		const doc = new DocxGen(docX[name].loadedContent);
+		doc.attachModule(imageModule);
+		const out = loadAndRender(doc, name, {image: "examples/image.png"});
+
+		const zip = out.getZip();
+		fs.writeFile("testWithoutRels.docx", zip.generate({type: "nodebuffer"}));
+
+		const imageFile = zip.files["word/media/image_generated_1.png"];
+		expect(imageFile != null, "No image file found").to.equal(true);
+		expect(imageFile.asText().length).to.be.within(17417, 17440);
+
+		const relsFile = zip.files["word/_rels/document.xml.rels"];
+		expect(relsFile != null, "No rels file found").to.equal(true);
+		const relsFileContent = relsFile.asText();
+		expectNormalCharacters(relsFileContent, '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">    <Relationship Target="numbering.xml" Id="docRId0" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"/>    <Relationship Target="styles.xml" Id="docRId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image_generated_1.png"/></Relationships>');
 
 		const documentFile = zip.files["word/document.xml"];
 		expect(documentFile != null, "No document file found").to.equal(true);
