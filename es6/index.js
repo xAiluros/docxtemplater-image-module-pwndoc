@@ -1,5 +1,9 @@
 "use strict";
 
+const isNaN = function (number) {
+	return !(number === number);
+};
+
 const SubContent = require("docxtemplater").SubContent;
 const ImgManager = require("./imgManager");
 const ImgReplacer = require("./imgReplacer");
@@ -131,6 +135,9 @@ class ImageModule {
 		return null;
 	}
 	getImageXml(rId, size) {
+		if (isNaN(rId)) {
+			throw new Error("rId is NaN, aborting");
+		}
 		return `<w:drawing>
   <wp:inline distT="0" distB="0" distL="0" distR="0">
     <wp:extent cx="${size[0]}" cy="${size[1]}"/>
@@ -182,6 +189,9 @@ class ImageModule {
 		`;
 	}
 	getImageXmlCentered(rId, size) {
+		if (isNaN(rId)) {
+			throw new Error("rId is NaN, aborting");
+		}
 		return `		<w:p>
 		  <w:pPr>
 			<w:jc w:val="center"/>

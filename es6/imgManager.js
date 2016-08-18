@@ -35,11 +35,14 @@ module.exports = class ImgManager {
 		const content = DocUtils.decodeUtf8(file.asText());
 		this.xmlDoc = DocUtils.str2xml(content);
 		// Get all Rids
-		const RidArray = [];
+		const RidArray = [0];
 		const iterable = this.xmlDoc.getElementsByTagName("Relationship");
 		for (let i = 0, tag; i < iterable.length; i++) {
 			tag = iterable[i];
-			RidArray.push(parseInt(tag.getAttribute("Id").substr(3), 10));
+			const id = tag.getAttribute("Id");
+			if (/^rId[0-9]+$/.test(id)) {
+				RidArray.push(parseInt(id.substr(3), 10));
+			}
 		}
 		this.maxRid = DocUtils.maxArray(RidArray);
 		this.imageRels = [];
