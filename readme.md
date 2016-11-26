@@ -1,15 +1,21 @@
-This version is only compatible with docxtemplater version 2
+This version is only compatible with docxtemplater version 3
 
-The version 1 of this module has added two mandatory arguments: `opts.getImage` and `opts.getSize`. See Usage
+Here is a compatibility table :
+
+| image-module  | docxtemplater |
+|---------------|:-------------:|
+| version 3     |   version 3   |
+| version 1.0.4 | version 2.1.5 |
+| version 1.0.0 | version 2.0.0 |
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater-image-module.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater-image-module) [![Download count](http://img.shields.io/npm/dm/docxtemplater-image-module.svg?style=flat)](https://www.npmjs.org/package/docxtemplater-image-module) [![Current tag](http://img.shields.io/npm/v/docxtemplater-image-module.svg?style=flat)](https://www.npmjs.org/package/docxtemplater-image-module) [![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater-image-module/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater-image-module)
 
 Installation:
 =============
 
-You will need docxtemplater version 2: `npm install docxtemplater`
+You will need docxtemplater `npm install docxtemplater`
 
-install this module: `npm install docxtemplater-image-module`
+Then install this module: `npm install docxtemplater-image-module`
 
 Usage
 =====
@@ -31,15 +37,16 @@ opts.getSize=function(img,tagValue, tagName) {
 
 var imageModule=new ImageModule(opts);
 
-var docx=new DocxGen()
+var zip = new JSZip(content);
+var docx=new Docxtemplater()
     .attachModule(imageModule)
-    .load(content)
+    .loadZip(zip)
     .setData({image:'examples/image.png'})
-    .render()
+    .render();
 
 var buffer= docx
         .getZip()
-        .generate({type:"nodebuffer"})
+        .generate({type:"nodebuffer"});
 
 fs.writeFile("test.docx",buffer);
 ```
@@ -75,7 +82,7 @@ opts.getSize=function(img) {
    console.log(sizeObj);
    return [sizeObj.width,sizeObj.height];
 }
-imageModule=new ImageModule(opts)
+imageModule=new ImageModule(opts);
 ```
 
 Centering images

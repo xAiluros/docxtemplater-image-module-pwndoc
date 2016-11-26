@@ -1,7 +1,7 @@
 {
   "name": "docxtemplater-image-module",
   "version": "3.0.0",
-  "description": "Image Module for docxtemplater v1.0",
+  "description": "Image Module for docxtemplater",
   "main": "js/index.js",
   "scripts": {
     "compile": "rimraf js && mkdirp js && babel es6 --out-dir js",
