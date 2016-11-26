@@ -46,7 +46,6 @@ beforeEach(function () {
 });
 
 function testStart() {
-	// TODO test in browser
 	describe("{%image}", function () {
 		it("should work with one image", function () {
 			this.name = "imageExample.docx";

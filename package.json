@@ -5,7 +5,7 @@
   "main": "js/index.js",
   "scripts": {
     "compile": "rimraf js && mkdirp js && babel es6 --out-dir js",
-    "prepublish": "rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
+    "preversion": "rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
     "test:compiled": "mocha js/test.js",
     "test:es6": "mocha es6/test.js",
     "lint": "eslint .",
