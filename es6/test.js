@@ -20,6 +20,8 @@ const fileNames = [
 	"expectedLoopCentered.docx",
 	"withoutRels.docx",
 	"expectedWithoutRels.docx",
+	"tagImage.pptx",
+    "expectedTagImage.pptx"
 ];
 
 beforeEach(function () {
@@ -30,12 +32,16 @@ beforeEach(function () {
 		getSize: function () {
 			return [150, 150];
 		},
-		centered: false,
+		centered: false
 	};
 
 	this.loadAndRender = function () {
+        var fileType = (testutils.pptX[this.name]) ? 'pptx' : 'docx';
+        var file = (fileType == 'pptx') ? testutils.pptX[this.name] : testutils.docX[this.name];
 		this.doc = new Docxtemplater();
-		const inputZip = new JSZip(testutils.docX[this.name].loadedContent);
+        this.doc.setOptions({fileType});
+        this.opts.fileType = fileType;
+		const inputZip = new JSZip(file.loadedContent);
 		this.doc.loadZip(inputZip).setData(this.data);
 		const imageModule = new ImageModule(this.opts);
 		this.doc.attachModule(imageModule);
@@ -51,6 +57,7 @@ function testStart() {
 			this.name = "imageExample.docx";
 			this.expectedName = "expectedOneImage.docx";
 			this.data = {image: "examples/image.png"};
+            this.fileType = 'docx';
 			this.loadAndRender();
 		});
 
@@ -90,12 +97,23 @@ function testStart() {
 			this.data = {image: "examples/image.png"};
 			this.loadAndRender();
 		});
+
+        it("should work with PPTX documents", function () {
+            this.name = "tagImage.pptx";
+            this.expectedName = "expectedTagImage.pptx";
+            this.data = {image: "examples/image.png"};
+            this.loadAndRender();
+        });
 	});
 }
 
 testutils.setExamplesDirectory(path.resolve(__dirname, "..", "examples"));
 testutils.setStartFunction(testStart);
 fileNames.forEach(function (filename) {
-	testutils.loadFile(filename, testutils.loadDocx);
+    if (filename.endsWith('pptx')) {
+        testutils.loadFile(filename, testutils.loadPptx);
+    } else {
+        testutils.loadFile(filename, testutils.loadDocx);
+    }
 });
 testutils.start();
