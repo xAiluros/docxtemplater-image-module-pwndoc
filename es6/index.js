@@ -10,28 +10,22 @@ function isNaN(number) {
 const ImgManager = require("./imgManager");
 const moduleName = "open-xml-templating/docxtemplater-image-module";
 
-function getInner({part, left, right, postparsed, index}) {
-    let xmlString = postparsed.slice(left + 1, right).reduce(function (concat, item) {
-        return concat + item.value;
-    }, "");
-    part.off = {};
-	part.ext = {};
-    var xmlDoc = new DOMParser().parseFromString("<xml>" + xmlString + "</xml>");
-    var off = xmlDoc.getElementsByTagName("a:off");
-    if (off.length > 0) {
-        part.off.x = off[0].getAttribute("x");
-        part.off.y = off[0].getAttribute("y");
-    }
-	var ext = xmlDoc.getElementsByTagName("a:ext");
+function getInner({part, left, right, postparsed}) {
+	const xmlString = postparsed.slice(left + 1, right).reduce(function (concat, item) {
+		return concat + item.value;
+	}, "");
+	part.off = {x: 0, y: 0};
+	part.ext = {cx: 0, cy: 0};
+	const xmlDoc = new DOMParser().parseFromString("<xml>" + xmlString + "</xml>");
+	const off = xmlDoc.getElementsByTagName("a:off");
+	if (off.length > 0) {
+		part.off.x = off[0].getAttribute("x");
+		part.off.y = off[0].getAttribute("y");
+	}
+	const ext = xmlDoc.getElementsByTagName("a:ext");
 	if (ext.length > 0) {
 		part.ext.cx = ext[0].getAttribute("cx");
 		part.ext.cy = ext[0].getAttribute("cy");
-	}
-	if (part.off.x == null || part.off.y == null || part.ext.cx == null || part.ext.cy == null) {
-		part.off.x = 0;
-		part.off.y = 0;
-		part.ext.cx = 0;
-		part.ext.cy = 0;
 	}
 	return part;
 }
@@ -65,19 +59,20 @@ class ImageModule {
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
-        if (placeHolderContent.substring(0, 2) === "%%") {
-            return {type, value: placeHolderContent.substr(2), module, centered: true};
-        }
-        if (placeHolderContent.substring(0, 1) === "%") {
-            return {type, value: placeHolderContent.substr(1), module, centered: false};
-        }
+		if (placeHolderContent.substring(0, 2) === "%%") {
+			return {type, value: placeHolderContent.substr(2), module, centered: true};
+		}
+		if (placeHolderContent.substring(0, 1) === "%") {
+			return {type, value: placeHolderContent.substr(1), module, centered: false};
+		}
 		return null;
 	}
 	postparse(parsed) {
 		let expandTo;
-		if (this.options.fileType == "pptx") {
+		if (this.options.fileType === "pptx") {
 			expandTo = "p:sp";
-		} else {
+		}
+		else {
 			expandTo = this.options.centered ? "w:p" : "w:t";
 		}
 		return DocUtils.traits.expandToOne(parsed, {moduleName, getInner, expandTo});
@@ -87,43 +82,48 @@ class ImageModule {
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		const tagValue = options.scopeManager.getValue(part.value);
-
-		const tagXml = this.fileTypeConfig.tagTextXml;
-
-		if (tagValue == null) {
-			return {value: tagXml};
-		}
-
-		let imgBuffer;
 		try {
-			imgBuffer = this.options.getImage(tagValue, part.value);
+			const tagValue = options.scopeManager.getValue(part.value);
+			if (!tagValue) {
+				throw new Error("tagValue is empty");
+			}
+			const imgBuffer = this.options.getImage(tagValue, part.value);
+			const rId = this.imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+			const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+			return this.getRenderedPart(part, rId, sizePixel);
 		}
 		catch (e) {
-			return {value: tagXml};
+			return {value: this.fileTypeConfig.tagTextXml};
 		}
-		const rId = this.imgManager.addImageRels(this.getNextImageName(), imgBuffer);
-		const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+	}
+	getRenderedPart(part, rId, sizePixel) {
 		const size = [this.convertPixelsToEmus(sizePixel[0]), this.convertPixelsToEmus(sizePixel[1])];
+		const centered = (this.options.centered || part.centered);
 		let newText;
-
-		if (this.options.fileType == "pptx") {
-			let offset = {x: parseInt(part.off.x, 10), y: parseInt(part.off.y, 10)};
-			let cellCX = parseInt(part.ext.cx, 10) || 1;
-			let cellCY = parseInt(part.ext.cy, 10) || 1;
-			let imgW = parseInt(size[0], 10) || 1;
-			let imgH = parseInt(size[1], 10) || 1;
-
-			if (this.options.centered || part.centered) {
-				offset.x = offset.x + (cellCX / 2) - (imgW / 2);
-				offset.y = offset.y + (cellCY / 2) - (imgH / 2);
-			}
-
-			newText = this.getPPTImageXml(rId, [imgW, imgH], offset);
-		} else {
-			newText = (this.options.centered || part.centered) ? this.getImageXmlCentered(rId, size) : this.getImageXml(rId, size);
+		if (this.options.fileType === "pptx") {
+			newText = this.getPptRender(part, rId, size, centered);
+		}
+		else {
+			newText = this.getDocxRender(part, rId, size, centered);
 		}
 		return {value: newText};
+	}
+	getPptRender(part, rId, size, centered) {
+		const offset = {x: parseInt(part.off.x, 10), y: parseInt(part.off.y, 10)};
+		const cellCX = parseInt(part.ext.cx, 10) || 1;
+		const cellCY = parseInt(part.ext.cy, 10) || 1;
+		const imgW = parseInt(size[0], 10) || 1;
+		const imgH = parseInt(size[1], 10) || 1;
+
+		if (centered) {
+			offset.x = offset.x + (cellCX / 2) - (imgW / 2);
+			offset.y = offset.y + (cellCY / 2) - (imgH / 2);
+		}
+
+		return this.getPptImageXml(rId, [imgW, imgH], offset);
+	}
+	getDocxRender(part, rId, size, centered) {
+		return (centered) ? this.getImageXmlCentered(rId, size) : this.getImageXml(rId, size);
 	}
 	getNextImageName() {
 		const name = `image_generated_${this.imageNumber}.png`;
@@ -241,7 +241,7 @@ class ImageModule {
 		</w:p>
 		`.replace(/\t|\n/g, "");
 	}
-	getPPTImageXml(rId, size, off) {
+	getPptImageXml(rId, size, off) {
 		if (isNaN(rId)) {
 			throw new Error("rId is NaN, aborting");
 		}

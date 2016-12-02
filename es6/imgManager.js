@@ -14,11 +14,12 @@ module.exports = class ImgManager {
 	}
 	getRelsFile(fileName) {
 		let relsFilePath;
-		let relsFileName = this.getRelsFileName(fileName);
-		let fileType = this.getFileType(fileName);
-		if (fileType == "ppt") {
+		const relsFileName = this.getRelsFileName(fileName);
+		const fileType = this.getFileType(fileName);
+		if (fileType === "ppt") {
 			relsFilePath = "ppt/slides/_rels/" + relsFileName;
-		} else {
+		}
+		else {
 			relsFilePath = "word/_rels/" + relsFileName;
 		}
 		return relsFilePath;
@@ -100,8 +101,9 @@ module.exports = class ImgManager {
 		newTag.setAttribute("Id", `rId${maxRid}`);
 		newTag.setAttribute("Type", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
 		if (this.fileType === "ppt") {
-			newTag.setAttribute("Target", `../media/${realImageName}`)
-		} else {
+			newTag.setAttribute("Target", `../media/${realImageName}`);
+		}
+		else {
 			newTag.setAttribute("Target", `media/${realImageName}`);
 		}
 		relationships.appendChild(newTag);
