@@ -14,6 +14,7 @@ function getInner({part}) {
 
 class ImageModule {
 	constructor(options) {
+		this.name = "ImageModule";
 		this.options = options || {};
 		if (this.options.centered == null) { this.options.centered = false; }
 		if (this.options.getImage == null) { throw new Error("You should pass getImage"); }
