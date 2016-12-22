@@ -5,7 +5,7 @@
   "main": "js/index.js",
   "scripts": {
     "compile": "rimraf js && mkdirp js && babel es6 --out-dir js",
-    "preversion": "npm test",
+    "preversion": "npm test && npm run compile && npm run browserify && npm run uglify",
     "test:compiled": "mocha js/test.js",
     "test:es6": "mocha es6/test.js",
     "lint": "eslint .",
@@ -15,15 +15,15 @@
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
-    "babel-eslint": "^6.0.2",
+    "babel-eslint": "^7.1.1",
     "babel-preset-es2015": "^6.3.13",
     "browserify": "^13.1.0",
     "chai": "^3.4.1",
     "docxtemplater": "^3.0.0",
-    "eslint": "^2.7.0",
-    "jszip": "^2.6.0",
-    "mocha": "^2.4.5",
+    "eslint": "^3.12.2",
+    "jszip": "^2.6.1",
     "mkdirp": "^0.5.1",
+    "mocha": "^3.2.0",
     "rimraf": "^2.5.4",
     "uglifyjs": "^2.4.10"
   },
