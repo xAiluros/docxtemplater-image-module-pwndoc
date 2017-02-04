@@ -11,7 +11,7 @@
     "test:es6": "mocha es6/test.js",
     "lint": "eslint .",
     "test": "npm run compile && npm run test:compiled",
-    "browserify": "browserify --insert-global-vars __filename,__dirname -r ./js/index.js -s ImageModule > build/imagemodule.js",
+    "browserify": "mkdir build -p && browserify --insert-global-vars __filename,__dirname -r ./js/index.js -s ImageModule > build/imagemodule.js",
     "uglify": "uglifyjs build/imagemodule.js > build/imagemodule.min.js"
   },
   "devDependencies": {
