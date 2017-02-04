@@ -22,6 +22,8 @@ const fileNames = [
 	"expectedWithoutRels.docx",
 	"tagImage.pptx",
 	"expectedTagImage.pptx",
+	"tagImageCentered.pptx",
+	"expectedTagImageCentered.pptx",
 ];
 
 beforeEach(function () {
@@ -101,6 +103,13 @@ function testStart() {
 		it("should work with PPTX documents", function () {
 			this.name = "tagImage.pptx";
 			this.expectedName = "expectedTagImage.pptx";
+			this.data = {image: "examples/image.png"};
+			this.loadAndRender();
+		});
+
+		it("should work with PPTX documents centered", function () {
+			this.name = "tagImageCentered.pptx";
+			this.expectedName = "expectedTagImageCentered.pptx";
 			this.data = {image: "examples/image.png"};
 			this.loadAndRender();
 		});

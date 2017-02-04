@@ -4,6 +4,7 @@
   "description": "Image Module for docxtemplater",
   "main": "js/index.js",
   "scripts": {
+    "test:coverage": "istanbul cover _mocha --  es6/test.js",
     "compile": "rimraf js && mkdirp js && babel es6 --out-dir js",
     "preversion": "npm test && npm run compile && npm run browserify && npm run uglify",
     "test:compiled": "mocha js/test.js",
@@ -24,6 +25,7 @@
     "jszip": "^2.6.1",
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
+    "istanbul": "^0.4.5",
     "rimraf": "^2.5.4",
     "uglifyjs": "^2.4.10"
   },
