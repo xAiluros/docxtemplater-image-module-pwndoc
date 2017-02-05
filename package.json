@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater-image-module",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Image Module for docxtemplater",
   "main": "js/index.js",
   "scripts": {
