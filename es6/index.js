@@ -75,7 +75,7 @@ class ImageModule {
 	postparse(parsed) {
 		let expandTo;
 		let getInner;
-		if (this.options.fileType === "pptx") {
+		if (this.fileType === "pptx") {
 			expandTo = "p:sp";
 			getInner = getInnerPptx;
 		}
@@ -112,7 +112,7 @@ class ImageModule {
 		const size = [DocUtils.convertPixelsToEmus(sizePixel[0]), DocUtils.convertPixelsToEmus(sizePixel[1])];
 		const centered = (this.options.centered || part.centered);
 		let newText;
-		if (this.options.fileType === "pptx") {
+		if (this.fileType === "pptx") {
 			newText = this.getRenderedPartPptx(part, rId, size, centered);
 		}
 		else {

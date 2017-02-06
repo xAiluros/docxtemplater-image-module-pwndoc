@@ -38,11 +38,10 @@ beforeEach(function () {
 	};
 
 	this.loadAndRender = function () {
-		const fileType = (testutils.pptX[this.name]) ? "pptx" : "docx";
-		const file = (fileType === "pptx") ? testutils.pptX[this.name] : testutils.docX[this.name];
+		const fileType = testutils.pptX[this.name] ? "pptx" : "docx";
+		const file = fileType === "pptx" ? testutils.pptX[this.name] : testutils.docX[this.name];
 		this.doc = new Docxtemplater();
 		this.doc.setOptions({fileType});
-		this.opts.fileType = fileType;
 		const inputZip = new JSZip(file.loadedContent);
 		this.doc.loadZip(inputZip).setData(this.data);
 		const imageModule = new ImageModule(this.opts);
@@ -59,7 +58,6 @@ function testStart() {
 			this.name = "imageExample.docx";
 			this.expectedName = "expectedOneImage.docx";
 			this.data = {image: "examples/image.png"};
-			this.fileType = "docx";
 			this.loadAndRender();
 		});
 
@@ -119,11 +117,7 @@ function testStart() {
 testutils.setExamplesDirectory(path.resolve(__dirname, "..", "examples"));
 testutils.setStartFunction(testStart);
 fileNames.forEach(function (filename) {
-	if (filename.indexOf(".pptx") === filename.length - 5) {
-		testutils.loadFile(filename, testutils.loadPptx);
-	}
-	else {
-		testutils.loadFile(filename, testutils.loadDocx);
-	}
+	const loader = /\.pptx$/.test(filename) ? testutils.loadPptx : testutils.loadDocx;
+	testutils.loadFile(filename, loader);
 });
 testutils.start();
