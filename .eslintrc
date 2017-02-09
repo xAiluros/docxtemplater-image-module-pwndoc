@@ -2,6 +2,7 @@
   "parser": "babel-eslint",
   "globals":{
     "saveAs": true,
+    "Uint8Array": true,
     "JSZipUtils": true
   },
   "env": {
