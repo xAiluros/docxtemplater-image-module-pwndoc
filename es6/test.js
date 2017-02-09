@@ -20,6 +20,7 @@ const fileNames = [
 	"expectedLoopCentered.docx",
 	"withoutRels.docx",
 	"expectedWithoutRels.docx",
+	"expectedBase64.docx",
 	"tagImage.pptx",
 	"expectedTagImage.pptx",
 	"tagImageCentered.pptx",
@@ -109,6 +110,34 @@ function testStart() {
 			this.name = "tagImageCentered.pptx";
 			this.expectedName = "expectedTagImageCentered.pptx";
 			this.data = {image: "examples/image.png"};
+			this.loadAndRender();
+		});
+
+		it("should work with base64 data", function () {
+			const base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QIJBywfp3IOswAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAkUlEQVQY052PMQqDQBREZ1f/d1kUm3SxkeAF/FdIjpOcw2vpKcRWCwsRPMFPsaIQSIoMr5pXDGNUFd9j8TOn7kRW71fvO5HTq6qqtnWtzh20IqE3YXtL0zyKwAROQLQ5l/c9gHjfKK6wMZjADE6s49Dver4/smEAc2CuqgwAYI5jU9NcxhHEy60sni986H9+vwG1yDHfK1jitgAAAABJRU5ErkJggg=="
+			this.name = "imageExample.docx";
+			function base64DataURLToArrayBuffer(dataURL) {
+				const string_base64 = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+				var binary_string;
+				if (typeof window !== "undefined") {
+					binary_string = window.atob(string_base64);
+				}
+				else {
+					binary_string = new Buffer(string_base64, 'base64').toString('binary');
+				}
+				var len = binary_string.length;
+				var bytes = new Uint8Array(len);
+				for (var i = 0; i < len; i++) {
+					var ascii = binary_string.charCodeAt(i);
+					bytes[i] = ascii;
+				}
+				return bytes.buffer;
+			};
+			this.opts.getImage = function (image) {
+				return image;
+			}
+			this.expectedName = "expectedBase64.docx";
+			this.data = {image: base64DataURLToArrayBuffer(base64Image)};
 			this.loadAndRender();
 		});
 	});
