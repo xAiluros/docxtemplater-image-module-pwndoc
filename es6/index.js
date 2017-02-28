@@ -91,19 +91,17 @@ class ImageModule {
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		try {
-			const tagValue = options.scopeManager.getValue(part.value);
-			if (!tagValue) {
-				throw new Error("tagValue is empty");
-			}
-			const imgBuffer = this.options.getImage(tagValue, part.value);
-			const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
-			const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
-			return this.getRenderedPart(part, rId, sizePixel);
-		}
-		catch (e) {
+		const tagValue = options.scopeManager.getValue(part.value);
+		if (!tagValue) {
 			return {value: this.fileTypeConfig.tagTextXml};
 		}
+		const imgBuffer = this.options.getImage(tagValue, part.value);
+		if (!imgBuffer) {
+			return {value: this.fileTypeConfig.tagTextXml};
+		}
+		const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+		const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+		return this.getRenderedPart(part, rId, sizePixel);
 	}
 	getRenderedPart(part, rId, sizePixel) {
 		if (isNaN(rId)) {
