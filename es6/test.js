@@ -13,6 +13,8 @@ const fileNames = [
 	"imageExample.docx",
 	"imageHeaderFooterExample.docx",
 	"imageLoopExample.docx",
+	"imageInlineExample.docx",
+	"expectedInline.docx",
 	"expectedNoImage.docx",
 	"expectedHeaderFooter.docx",
 	"expectedOneImage.docx",
@@ -73,6 +75,13 @@ function testStart() {
 			this.name = "imageExample.docx";
 			this.expectedName = "expectedNoImage.docx";
 			this.data = {};
+			this.loadAndRender();
+		});
+
+		it("should work with inline", function () {
+			this.name = "imageInlineExample.docx";
+			this.expectedName = "expectedInline.docx";
+			this.data = {firefox: "examples/image.png"};
 			this.loadAndRender();
 		});
 
