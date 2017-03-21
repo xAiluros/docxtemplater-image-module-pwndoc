@@ -8,6 +8,7 @@ const JSZip = require("jszip");
 const ImageModule = require("./index.js");
 const testutils = require("docxtemplater/js/tests/utils");
 const shouldBeSame = testutils.shouldBeSame;
+const sizeOf = require('image-size');
 
 const fileNames = [
 	"imageExample.docx",
@@ -27,12 +28,13 @@ const fileNames = [
 	"expectedTagImage.pptx",
 	"tagImageCentered.pptx",
 	"expectedTagImageCentered.pptx",
+	"expectedInlineResize.docx"
 ];
 
 beforeEach(function () {
 	this.opts = {
 		getImage: function (tagValue) {
-			return fs.readFileSync(tagValue, "binary");
+			return fs.readFileSync(tagValue);
 		},
 		getSize: function () {
 			return [150, 150];
@@ -41,10 +43,8 @@ beforeEach(function () {
 	};
 
 	this.loadAndRender = function () {
-		const fileType = testutils.pptX[this.name] ? "pptx" : "docx";
-		const file = fileType === "pptx" ? testutils.pptX[this.name] : testutils.docX[this.name];
+		const file = testutils.createDoc(this.name)
 		this.doc = new Docxtemplater();
-		this.doc.setOptions({fileType});
 		const inputZip = new JSZip(file.loadedContent);
 		this.doc.loadZip(inputZip).setData(this.data);
 		const imageModule = new ImageModule(this.opts);
@@ -122,6 +122,17 @@ function testStart() {
 			this.loadAndRender();
 		});
 
+		it("should work with auto resize", function () {
+			this.name = "imageInlineExample.docx";
+			this.expectedName = "expectedInlineResize.docx";
+			this.opts.getSize = function (img, tagValue, tagName) {
+				const sizeObj = sizeOf(img);
+				return [sizeObj.width, sizeObj.height];
+			}
+			this.data = {firefox: "examples/image.png"};
+			this.loadAndRender();
+		});
+
 		it("should work with base64 data", function () {
 			const base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QIJBywfp3IOswAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAkUlEQVQY052PMQqDQBREZ1f/d1kUm3SxkeAF/FdIjpOcw2vpKcRWCwsRPMFPsaIQSIoMr5pXDGNUFd9j8TOn7kRW71fvO5HTq6qqtnWtzh20IqE3YXtL0zyKwAROQLQ5l/c9gHjfKK6wMZjADE6s49Dver4/smEAc2CuqgwAYI5jU9NcxhHEy60sni986H9+vwG1yDHfK1jitgAAAABJRU5ErkJggg==";
 			this.name = "imageExample.docx";
@@ -155,7 +166,6 @@ function testStart() {
 testutils.setExamplesDirectory(path.resolve(__dirname, "..", "examples"));
 testutils.setStartFunction(testStart);
 fileNames.forEach(function (filename) {
-	const loader = /\.pptx$/.test(filename) ? testutils.loadPptx : testutils.loadDocx;
-	testutils.loadFile(filename, loader);
+	testutils.loadFile(filename, testutils.loadDocument);
 });
 testutils.start();
