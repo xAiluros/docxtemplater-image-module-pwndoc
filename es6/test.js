@@ -8,7 +8,7 @@ const JSZip = require("jszip");
 const ImageModule = require("./index.js");
 const testutils = require("docxtemplater/js/tests/utils");
 const shouldBeSame = testutils.shouldBeSame;
-const sizeOf = require('image-size');
+const sizeOf = require("image-size");
 
 const fileNames = [
 	"imageExample.docx",
@@ -28,7 +28,7 @@ const fileNames = [
 	"expectedTagImage.pptx",
 	"tagImageCentered.pptx",
 	"expectedTagImageCentered.pptx",
-	"expectedInlineResize.docx"
+	"expectedInlineResize.docx",
 ];
 
 beforeEach(function () {
@@ -43,7 +43,7 @@ beforeEach(function () {
 	};
 
 	this.loadAndRender = function () {
-		const file = testutils.createDoc(this.name)
+		const file = testutils.createDoc(this.name);
 		this.doc = new Docxtemplater();
 		const inputZip = new JSZip(file.loadedContent);
 		this.doc.loadZip(inputZip).setData(this.data);
@@ -125,10 +125,10 @@ function testStart() {
 		it("should work with auto resize", function () {
 			this.name = "imageInlineExample.docx";
 			this.expectedName = "expectedInlineResize.docx";
-			this.opts.getSize = function (img, tagValue, tagName) {
+			this.opts.getSize = function (img) {
 				const sizeObj = sizeOf(img);
 				return [sizeObj.width, sizeObj.height];
-			}
+			};
 			this.data = {firefox: "examples/image.png"};
 			this.loadAndRender();
 		});
