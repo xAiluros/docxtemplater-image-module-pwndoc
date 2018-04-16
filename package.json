@@ -1,7 +1,7 @@
 {
   "name": "docxtemplater-image-module",
   "version": "3.1.0",
-  "description": "Image Module for docxtemplater",
+  "description": "Open Source Image Module for docxtemplater",
   "main": "js/index.js",
   "scripts": {
     "test:coverage": "istanbul cover _mocha --  es6/test.js",
