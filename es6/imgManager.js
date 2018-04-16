@@ -3,43 +3,47 @@
 const DocUtils = require("./docUtils");
 const extensionRegex = /[^.]+\.([^.]+)/;
 
+const rels = {
+	getPrefix(fileType) {
+		return fileType === "docx" ? "word" : "ppt";
+	},
+	getFileTypeName(fileType) {
+		return fileType === "docx" ? "document" : "presentation";
+	},
+	getRelsFileName(fileName) {
+		return fileName.replace(/^.*?([a-zA-Z0-9]+)\.xml$/, "$1") + ".xml.rels";
+	},
+	getRelsFilePath(fileName, fileType) {
+		const relsFileName = rels.getRelsFileName(fileName);
+		const prefix = fileType === "pptx" ? "ppt/slides" : "word";
+		return `${prefix}/_rels/${relsFileName}`;
+	},
+};
+
 module.exports = class ImgManager {
-	constructor(zip, fileName, xmlDocuments) {
-		this.fileType = this.getFileType(fileName);
-		this.fileTypeName = this.getFileTypeName(fileName);
-		this.relsFilePath = this.getRelsFile(fileName);
+	constructor(zip, fileName, xmlDocuments, fileType) {
+		this.fileName = fileName;
+		this.prefix = rels.getPrefix(fileType);
 		this.zip = zip;
 		this.xmlDocuments = xmlDocuments;
-		this.relsDoc = xmlDocuments[this.relsFilePath] || this.createEmptyRelsDoc(xmlDocuments, this.relsFilePath);
-	}
-	getRelsFile(fileName) {
-		let relsFilePath;
-		const relsFileName = this.getRelsFileName(fileName);
-		const fileType = this.getFileType(fileName);
-		if (fileType === "ppt") {
-			relsFilePath = "ppt/slides/_rels/" + relsFileName;
-		}
-		else {
-			relsFilePath = "word/_rels/" + relsFileName;
-		}
-		return relsFilePath;
-	}
-	getRelsFileName(fileName) {
-		return fileName.replace(/^.*?([a-z0-9]+)\.xml$/, "$1") + ".xml.rels";
-	}
-	getFileType(fileName) {
-		return (fileName.indexOf("ppt/slides") === 0) ? "ppt" : "word";
-	}
-	getFileTypeName(fileName) {
-		return (fileName.indexOf("ppt/slides") === 0) ? "presentation" : "document";
+		this.fileTypeName = rels.getFileTypeName(fileType);
+		this.mediaPrefix = fileType === "pptx" ? "../media" : "media";
+		const relsFilePath = rels.getRelsFilePath(fileName, fileType);
+		this.relsDoc = xmlDocuments[relsFilePath] || this.createEmptyRelsDoc(xmlDocuments, relsFilePath);
 	}
 	createEmptyRelsDoc(xmlDocuments, relsFileName) {
-		const file = this.zip.files[relsFileName] || this.zip.files[this.fileType + "/_rels/" + this.fileTypeName + ".xml.rels"];
-		if (!file) {
-			return;
+		const mainRels = this.prefix + "/_rels/" + (this.fileTypeName) + ".xml.rels";
+		const doc = xmlDocuments[mainRels];
+		if (!doc) {
+			const err = new Error("Could not copy from empty relsdoc");
+			err.properties = {
+				mainRels,
+				relsFileName,
+				files: Object.keys(this.zip.files),
+			};
+			throw err;
 		}
-		const content = DocUtils.decodeUtf8(file.asText());
-		const relsDoc = DocUtils.str2xml(content);
+		const relsDoc = DocUtils.str2xml(DocUtils.xml2str(doc));
 		const relationships = relsDoc.getElementsByTagName("Relationships")[0];
 		const relationshipChilds = relationships.getElementsByTagName("Relationship");
 		for (let i = 0, l = relationshipChilds.length; i < l; i++) {
@@ -81,11 +85,12 @@ module.exports = class ImgManager {
 			i = 0;
 		}
 		const realImageName = i === 0 ? imageName : imageName + `(${i})`;
-		if (this.zip.files[`${this.fileType}/media/${realImageName}`] != null) {
+		const imagePath = `${this.prefix}/media/${realImageName}`;
+		if (this.zip.files[imagePath] != null) {
 			return this.addImageRels(imageName, imageData, i + 1);
 		}
 		const image = {
-			name: `${this.fileType}/media/${realImageName}`,
+			name: imagePath,
 			data: imageData,
 			options: {
 				binary: true,
@@ -100,12 +105,7 @@ module.exports = class ImgManager {
 		const maxRid = this.loadImageRels() + 1;
 		newTag.setAttribute("Id", `rId${maxRid}`);
 		newTag.setAttribute("Type", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-		if (this.fileType === "ppt") {
-			newTag.setAttribute("Target", `../media/${realImageName}`);
-		}
-		else {
-			newTag.setAttribute("Target", `media/${realImageName}`);
-		}
+		newTag.setAttribute("Target", `${this.mediaPrefix}/${realImageName}`);
 		relationships.appendChild(newTag);
 		return maxRid;
 	}

@@ -28,7 +28,7 @@ var ImageModule=require('docxtemplater-image-module')
 var opts = {}
 opts.centered = false;
 opts.getImage=function(tagValue, tagName) {
-    return fs.readFileSync(tagValue,'binary');
+    return fs.readFileSync(tagValue);
 }
 
 opts.getSize=function(img,tagValue, tagName) {
@@ -131,10 +131,9 @@ Building in the browser
 You can build a release for the browser with the following commands
 
 ```
-npm install -g gulp jasmine-node uglify-js browserify
 npm install
+npm run preversion
 npm run compile
-mkdir build -p
-browserify -r ./js/index.js -s ImageModule > build/imagemodule.js
-uglifyjs build/imagemodule.js > build/imagemodule.min.js # Optional
 ```
+
+You will have build/imagemodule.js.
