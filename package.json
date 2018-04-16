@@ -1,6 +1,6 @@
 {
-  "name": "docxtemplater-image-module",
-  "version": "3.1.0",
+  "name": "open-docxtemplater-image-module",
+  "version": "1.0.0",
   "description": "Open Source Image Module for docxtemplater",
   "main": "js/index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "type": "git",
     "url": "https://github.com/open-xml-templating/docxtemplater-image-module"
   },
-  "author": "Edgar Hipp",
+  "author": "MaxRcd (Edgar Hipp)",
   "license": "MIT",
   "dependencies": {
     "xmldom": "^0.1.27"
