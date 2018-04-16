@@ -20,16 +20,18 @@ function getInnerPptx({part, left, right, postparsed}) {
 		return concat + item.value;
 	}, "");
 	const xmlDoc = new DOMParser().parseFromString("<xml>" + xmlString + "</xml>");
+	part.offset = {x: 0, y: 0};
+	part.ext = {cx: 0, cy: 0};
 	const offset = xmlDoc.getElementsByTagName("a:off");
 	const ext = xmlDoc.getElementsByTagName("a:ext");
-	part.ext = {
-		cx: parseInt(ext[0].getAttribute("cx"), 10),
-		cy: parseInt(ext[0].getAttribute("cy"), 10),
-	};
-	part.offset = {
-		x: parseInt(offset[0].getAttribute("x"), 10),
-		y: parseInt(offset[0].getAttribute("y"), 10),
-	};
+	if (ext.length > 0) {
+		part.ext.cx = parseInt(ext[ext.length - 1].getAttribute("cx"), 10);
+		part.ext.cy = parseInt(ext[ext.length - 1].getAttribute("cy"), 10);
+	}
+	if (offset.length > 0) {
+		part.offset.x = parseInt(offset[offset.length - 1].getAttribute("x"), 10);
+		part.offset.y = parseInt(offset[offset.length - 1].getAttribute("y"), 10);
+	}
 	return part;
 }
 
@@ -119,17 +121,15 @@ class ImageModule {
 		return {value: newText};
 	}
 	getRenderedPartPptx(part, rId, size, centered) {
-		const offset = {x: part.offset.x, y: part.offset.y};
-		const cellCX = part.ext.cx;
-		const cellCY = part.ext.cy;
-		const imgW = size[0];
-		const imgH = size[1];
-
+		const offset = {x: parseInt(part.offset.x, 10), y: parseInt(part.offset.y, 10)};
+		const cellCX = parseInt(part.ext.cx, 10) || 1;
+		const cellCY = parseInt(part.ext.cy, 10) || 1;
+		const imgW = parseInt(size[0], 10) || 1;
+		const imgH = parseInt(size[1], 10) || 1;
 		if (centered) {
-			offset.x += cellCX / 2 - imgW / 2;
-			offset.y += cellCY / 2 - imgH / 2;
+			offset.x = Math.round(offset.x + (cellCX / 2) - (imgW / 2));
+			offset.y = Math.round(offset.y + (cellCY / 2) - (imgH / 2));
 		}
-
 		return templates.getPptxImageXml(rId, [imgW, imgH], offset);
 	}
 	getRenderedPartDocx(rId, size, centered) {
