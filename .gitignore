@@ -4,5 +4,4 @@ test/
 js/ Install from NPM
 node_modules
 coverage/
-build
 .idea/
