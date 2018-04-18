@@ -1,6 +1,6 @@
 Open source docxtemplater image module
 ==========================================
-This repository holds a updated version of docxtemplater image module.
+This repository holds an updated version of docxtemplater image module.
 
 This package is open source. There is also a [paid version](https://docxtemplater.com/modules/image/) maintained by docxtemplater author.
 
@@ -8,7 +8,7 @@ Note this version is compatible with docxtemplater 3.x.
 
 Installation
 =============
-You first need to install docxtemplater by following its [installation guide](https://docxtemplater.readthedocs.io/en/latest/installation.html#node).
+You first need to install docxtemplater by following its [installation guide](https://docxtemplater.readthedocs.io/en/latest/installation.html).
 
 For Node.js install this package
 ```
@@ -16,6 +16,13 @@ npm install open-docxtemplater-image-module
 ```
 
 For the browser find builds in `build/` directory.
+
+Alternatively, you can create your own build from the sources:
+```
+npm run compile
+npm run browserify
+npm run uglify
+```
 
 Usage
 =====
@@ -68,6 +75,11 @@ Some notes regarding the template:
 
 Centering images
 ================
-You can center all images using either passing the option `opts.centered = true` or one by one using `{%%image}` instead of `{%image}` in your templates.
+You can center all images by setting the global switch to true `opts.centered = true`.
+
+If you would like to choose which images should be centered one by one:
+* Set the global switch to false `opts.centered = false`.
+* Use `{%image}` for images that shouldn't be centered.
+* Use `{%%image}` for images that you would like to see centered.
 
 In **pptx** generated documents, images are centered vertically and horizontally relative to the parent cell.
