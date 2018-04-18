@@ -10,7 +10,7 @@ Installation
 =============
 You first need to install docxtemplater by following its [installation guide](https://docxtemplater.readthedocs.io/en/latest/installation.html).
 
-For Node.js install this package
+For Node.js install this package:
 ```
 npm install open-docxtemplater-image-module
 ```
@@ -26,8 +26,7 @@ npm run uglify
 
 Usage
 =====
-To render an image, your **docx** or **pptx** template should contain the text: `{%image}`
-
+Assuming your **docx** or **pptx** template contains only the text `{%image}`:
 ```javascript
 //Node.js example
 var ImageModule = require('open-docxtemplater-image-module');
@@ -69,7 +68,7 @@ var buffer = doc
 fs.writeFile("test.docx",buffer);
 ```
 
-Some notes regarding the template:
+Some notes regarding templates:
 * **docx** files: the placeholder `{%image}` must be in a dedicated paragraph.
 * **pptx** files: the placeholder `{%image}` must be in a dedicated text cell.
 
