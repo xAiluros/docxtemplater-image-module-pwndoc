@@ -1,7 +1,6 @@
 /*.docx
 /*.pptx
 test/
-js/ Install from NPM
 node_modules
 coverage/
 .idea/
