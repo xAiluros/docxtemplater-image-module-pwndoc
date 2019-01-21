@@ -66,6 +66,9 @@ class ImageModule {
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
+		if (this.options.setParser) {
+			return this.options.setParser(placeHolderContent);
+		}
 		if (placeHolderContent.substring(0, 2) === "%%") {
 			return {type, value: placeHolderContent.substr(2), module, centered: true};
 		}
@@ -88,22 +91,52 @@ class ImageModule {
 		return DocUtils.traits.expandToOne(parsed, {moduleName, getInner, expandTo});
 	}
 	render(part, options) {
+		if (!part.type === "placeholder" || part.module !== moduleName) {
+			return null;
+		}
+		const tagValue = options.scopeManager.getValue(part.value, {
+			part: part,
+		});
+		if (!tagValue) {
+			return {value: this.fileTypeConfig.tagTextXml};
+		}
+		else if (typeof tagValue === "object") {
+			return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
+		}
+		this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
+		const imgManager = this.imgManagers[options.filePath];
+		const imgBuffer = this.options.getImage(tagValue, part.value);
+		const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+		const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+		return this.getRenderedPart(part, rId, sizePixel);
+	}
+	resolve(part, options) {
 		this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 		const imgManager = this.imgManagers[options.filePath];
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		const tagValue = options.scopeManager.getValue(part.value);
-		if (!tagValue) {
+		const value = options.scopeManager.getValue(part.value, {
+			part: part,
+		});
+		if (!value) {
 			return {value: this.fileTypeConfig.tagTextXml};
 		}
-		const imgBuffer = this.options.getImage(tagValue, part.value);
-		if (!imgBuffer) {
-			return {value: this.fileTypeConfig.tagTextXml};
-		}
-		const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
-		const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
-		return this.getRenderedPart(part, rId, sizePixel);
+		return new Promise((resolve) => {
+			const imgBuffer = this.options.getImage(value, part.value);
+			resolve(imgBuffer);
+		}).then((imgBuffer) => {
+			const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+			return new Promise((resolve) => {
+				const sizePixel = this.options.getSize(imgBuffer, value, part.value);
+				resolve(sizePixel);
+			}).then((sizePixel) => {
+				return {
+					rId: rId,
+					sizePixel: sizePixel,
+				};
+			});
+		});
 	}
 	getRenderedPart(part, rId, sizePixel) {
 		if (isNaN(rId)) {

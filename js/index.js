@@ -1,5 +1,7 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -92,6 +94,9 @@ var ImageModule = function () {
 		value: function parse(placeHolderContent) {
 			var module = moduleName;
 			var type = "placeholder";
+			if (this.options.setParser) {
+				return this.options.setParser(placeHolderContent);
+			}
 			if (placeHolderContent.substring(0, 2) === "%%") {
 				return { type: type, value: placeHolderContent.substr(2), module: module, centered: true };
 			}
@@ -117,22 +122,55 @@ var ImageModule = function () {
 	}, {
 		key: "render",
 		value: function render(part, options) {
+			if (!part.type === "placeholder" || part.module !== moduleName) {
+				return null;
+			}
+			var tagValue = options.scopeManager.getValue(part.value, {
+				part: part
+			});
+			if (!tagValue) {
+				return { value: this.fileTypeConfig.tagTextXml };
+			} else if ((typeof tagValue === "undefined" ? "undefined" : _typeof(tagValue)) === "object") {
+				return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
+			}
+			this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
+			var imgManager = this.imgManagers[options.filePath];
+			var imgBuffer = this.options.getImage(tagValue, part.value);
+			var rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+			var sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+			return this.getRenderedPart(part, rId, sizePixel);
+		}
+	}, {
+		key: "resolve",
+		value: function resolve(part, options) {
+			var _this = this;
+
 			this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 			var imgManager = this.imgManagers[options.filePath];
 			if (!part.type === "placeholder" || part.module !== moduleName) {
 				return null;
 			}
-			var tagValue = options.scopeManager.getValue(part.value);
-			if (!tagValue) {
+			var value = options.scopeManager.getValue(part.value, {
+				part: part
+			});
+			if (!value) {
 				return { value: this.fileTypeConfig.tagTextXml };
 			}
-			var imgBuffer = this.options.getImage(tagValue, part.value);
-			if (!imgBuffer) {
-				return { value: this.fileTypeConfig.tagTextXml };
-			}
-			var rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
-			var sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
-			return this.getRenderedPart(part, rId, sizePixel);
+			return new Promise(function (resolve) {
+				var imgBuffer = _this.options.getImage(value, part.value);
+				resolve(imgBuffer);
+			}).then(function (imgBuffer) {
+				var rId = imgManager.addImageRels(_this.getNextImageName(), imgBuffer);
+				return new Promise(function (resolve) {
+					var sizePixel = _this.options.getSize(imgBuffer, value, part.value);
+					resolve(sizePixel);
+				}).then(function (sizePixel) {
+					return {
+						rId: rId,
+						sizePixel: sizePixel
+					};
+				});
+			});
 		}
 	}, {
 		key: "getRenderedPart",
