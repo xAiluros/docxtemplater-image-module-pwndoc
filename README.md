@@ -11,14 +11,14 @@ Installation
 You first need to install docxtemplater by following its [installation guide](https://docxtemplater.readthedocs.io/en/latest/installation.html).
 
 For Node.js install this package:
-```
+```bash
 npm install docxtemplater-image-module-free
 ```
 
 For the browser find builds in `build/` directory.
 
 Alternatively, you can create your own build from the sources:
-```
+```bash
 npm run compile
 npm run browserify
 npm run uglify
@@ -285,3 +285,41 @@ opts.getSize = function (img, tagValue, tagName) {
     return [300, 300];
 };
 ```
+
+## Base64 include
+
+You can use base64 images with the following code:
+
+```js
+function base64DataURLToArrayBuffer(dataURL) {
+  const base64Regex = /^data:image\/(png|jpg|svg|svg\+xml);base64,/;
+  if (!base64Regex.test(dataURL)) {
+    return false;
+  }
+  const stringBase64 = dataURL.replace(base64Regex, "");
+  let binaryString;
+  if (typeof window !== "undefined") {
+    binaryString = window.atob(stringBase64);
+  } else {
+    binaryString = new Buffer(stringBase64, "base64").toString("binary");
+  }
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    const ascii = binaryString.charCodeAt(i);
+    bytes[i] = ascii;
+  }
+  return bytes.buffer;
+}
+const imageOpts = {
+  getImage(tag) {
+    return base64DataURLToArrayBuffer(tag);
+  },
+  getSize() {
+    return [100, 100];
+  },
+};
+doc.attachModule(new ImageModule(imageOpts));
+```
+
+ 
