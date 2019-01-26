@@ -1,6 +1,8 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ImageModule = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/js/index.js":[function(require,module,exports){
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -93,6 +95,9 @@ var ImageModule = function () {
 		value: function parse(placeHolderContent) {
 			var module = moduleName;
 			var type = "placeholder";
+			if (this.options.setParser) {
+				return this.options.setParser(placeHolderContent);
+			}
 			if (placeHolderContent.substring(0, 2) === "%%") {
 				return { type: type, value: placeHolderContent.substr(2), module: module, centered: true };
 			}
@@ -126,16 +131,23 @@ var ImageModule = function () {
 			});
 			if (!tagValue) {
 				return { value: this.fileTypeConfig.tagTextXml };
+			} else if ((typeof tagValue === "undefined" ? "undefined" : _typeof(tagValue)) === "object") {
+				return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
 			}
-			return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
+			// this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
+			var imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
+			var imgBuffer = this.options.getImage(tagValue, part.value);
+			var rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
+			var sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
+			return this.getRenderedPart(part, rId, sizePixel);
 		}
 	}, {
 		key: "resolve",
 		value: function resolve(part, options) {
 			var _this = this;
 
-			this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
-			var imgManager = this.imgManagers[options.filePath];
+			// this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
+			var imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 			if (!part.type === "placeholder" || part.module !== moduleName) {
 				return null;
 			}

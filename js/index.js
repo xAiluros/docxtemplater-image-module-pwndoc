@@ -133,8 +133,8 @@ var ImageModule = function () {
 			} else if ((typeof tagValue === "undefined" ? "undefined" : _typeof(tagValue)) === "object") {
 				return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
 			}
-			this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
-			var imgManager = this.imgManagers[options.filePath];
+			
+			var imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 			var imgBuffer = this.options.getImage(tagValue, part.value);
 			var rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
 			var sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
@@ -145,8 +145,7 @@ var ImageModule = function () {
 		value: function resolve(part, options) {
 			var _this = this;
 
-			this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
-			var imgManager = this.imgManagers[options.filePath];
+			var imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 			if (!part.type === "placeholder" || part.module !== moduleName) {
 				return null;
 			}

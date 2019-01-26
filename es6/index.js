@@ -103,16 +103,14 @@ class ImageModule {
 		else if (typeof tagValue === "object") {
 			return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
 		}
-		this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
-		const imgManager = this.imgManagers[options.filePath];
+		const imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 		const imgBuffer = this.options.getImage(tagValue, part.value);
 		const rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
 		const sizePixel = this.options.getSize(imgBuffer, tagValue, part.value);
 		return this.getRenderedPart(part, rId, sizePixel);
 	}
 	resolve(part, options) {
-		this.imgManagers[options.filePath] = this.imgManagers[options.filePath] || new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
-		const imgManager = this.imgManagers[options.filePath];
+		const imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
