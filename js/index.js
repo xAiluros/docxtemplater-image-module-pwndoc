@@ -64,6 +64,9 @@ var ImageModule = function () {
 		if (this.options.getSize == null) {
 			throw new Error("You should pass getSize");
 		}
+		if (this.options.border && !/^[a-fA-F0-9]{6}$/.test(this.options.border)) {
+			throw new Error("border option is incorrect");
+		}
 		this.imageNumber = 1;
 	}
 
@@ -133,7 +136,6 @@ var ImageModule = function () {
 			} else if ((typeof tagValue === "undefined" ? "undefined" : _typeof(tagValue)) === "object") {
 				return this.getRenderedPart(part, tagValue.rId, tagValue.sizePixel);
 			}
-			
 			var imgManager = new ImgManager(this.zip, options.filePath, this.xmlDocuments, this.fileType);
 			var imgBuffer = this.options.getImage(tagValue, part.value);
 			var rId = imgManager.addImageRels(this.getNextImageName(), imgBuffer);
@@ -179,11 +181,12 @@ var ImageModule = function () {
 			}
 			var size = [DocUtils.convertPixelsToEmus(sizePixel[0]), DocUtils.convertPixelsToEmus(sizePixel[1])];
 			var centered = this.options.centered || part.centered;
+			var border = this.options.border || null;
 			var newText = void 0;
 			if (this.fileType === "pptx") {
 				newText = this.getRenderedPartPptx(part, rId, size, centered);
 			} else {
-				newText = this.getRenderedPartDocx(rId, size, centered);
+				newText = this.getRenderedPartDocx(rId, size, centered, border);
 			}
 			return { value: newText };
 		}
@@ -204,7 +207,7 @@ var ImageModule = function () {
 	}, {
 		key: "getRenderedPartDocx",
 		value: function getRenderedPartDocx(rId, size, centered) {
-			return centered ? templates.getImageXmlCentered(rId, size) : templates.getImageXml(rId, size);
+			if (centered) return templates.getImageXmlCentered(rId, size);else if (border) return templates.getImageXmlBordered(rId, size, border);else return templates.getImageXml(rId, size);
 		}
 	}, {
 		key: "getNextImageName",

@@ -1,8 +1,12 @@
-- ### 1.1.0
+### 3.0.0
 
-  - Add Async support
+- Add border color option
 
--	### 1.0.0
+### 1.1.0
 
-  - This version is compatible with docxtemplater 3.0.
+- Add Async support
+
+### 1.0.0
+
+- This version is compatible with docxtemplater 3.0.
 

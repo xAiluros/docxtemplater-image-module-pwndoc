@@ -1,6 +1,6 @@
 Open Source docxtemplater image module
 ==========================================
-This repository holds an maintained version of docxtemplater image module.
+This repository holds a maintained version of docxtemplater image module for PwnDoc
 
 This package is open source. There is also a [paid version](https://docxtemplater.com/modules/image/) maintained by docxtemplater author.
 
@@ -12,7 +12,7 @@ You first need to install docxtemplater by following its [installation guide](ht
 
 For Node.js install this package:
 ```bash
-npm install docxtemplater-image-module-free
+npm install git+https://github.com/pwndoc/docxtemplater-image-module-pwndoc
 ```
 
 For the browser find builds in `build/` directory.
@@ -35,6 +35,7 @@ var ImageModule = require('open-docxtemplater-image-module');
 var opts = {}
 opts.centered = false; //Set to true to always center images
 opts.fileType = "docx"; //Or pptx
+opts.border = "000000" // Set border on images with Hex color WITHOUT # (here black)
 
 //Pass your image loader
 opts.getImage = function(tagValue, tagName) {

@@ -43,6 +43,7 @@ class ImageModule {
 		if (this.options.centered == null) { this.options.centered = false; }
 		if (this.options.getImage == null) { throw new Error("You should pass getImage"); }
 		if (this.options.getSize == null) { throw new Error("You should pass getSize"); }
+		if (this.options.border && !/^[a-fA-F0-9]{6}$/.test(this.options.border)) { throw new Error("border option is incorrect"); }
 		this.imageNumber = 1;
 	}
 	optionsTransformer(options, docxtemplater) {
@@ -142,12 +143,13 @@ class ImageModule {
 		}
 		const size = [DocUtils.convertPixelsToEmus(sizePixel[0]), DocUtils.convertPixelsToEmus(sizePixel[1])];
 		const centered = (this.options.centered || part.centered);
+		const border = this.options.border || null;
 		let newText;
 		if (this.fileType === "pptx") {
 			newText = this.getRenderedPartPptx(part, rId, size, centered);
 		}
 		else {
-			newText = this.getRenderedPartDocx(rId, size, centered);
+			newText = this.getRenderedPartDocx(rId, size, centered, border);
 		}
 		return {value: newText};
 	}
@@ -164,7 +166,12 @@ class ImageModule {
 		return templates.getPptxImageXml(rId, [imgW, imgH], offset);
 	}
 	getRenderedPartDocx(rId, size, centered) {
-		return centered ? templates.getImageXmlCentered(rId, size) : templates.getImageXml(rId, size);
+		if (centered)
+			return templates.getImageXmlCentered(rId, size)
+		else if (border)
+			return templates.getImageXmlBordered(rId, size, border)
+		else
+			return templates.getImageXml(rId, size);
 	}
 	getNextImageName() {
 		const name = `image_generated_${this.imageNumber}.png`;
