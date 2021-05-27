@@ -206,7 +206,7 @@ var ImageModule = function () {
 		}
 	}, {
 		key: "getRenderedPartDocx",
-		value: function getRenderedPartDocx(rId, size, centered) {
+		value: function getRenderedPartDocx(rId, size, centered, border) {
 			if (centered) return templates.getImageXmlCentered(rId, size);else if (border) return templates.getImageXmlBordered(rId, size, border);else return templates.getImageXml(rId, size);
 		}
 	}, {

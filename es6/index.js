@@ -165,7 +165,7 @@ class ImageModule {
 		}
 		return templates.getPptxImageXml(rId, [imgW, imgH], offset);
 	}
-	getRenderedPartDocx(rId, size, centered) {
+	getRenderedPartDocx(rId, size, centered, border) {
 		if (centered)
 			return templates.getImageXmlCentered(rId, size)
 		else if (border)
